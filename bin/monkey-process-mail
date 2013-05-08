@@ -1,0 +1,60 @@
+#!/usr/bin/env ruby
+#
+# Process mail piped into this command, e.g., storing of attachments or
+# printing (after confirmation).  To be called on individual messages from
+# Mutt, for example.
+
+require 'optparse'
+
+opts = OptionParser.new
+opts.banner = <<EOS
+Usage: #{opts.program_name}
+
+Process mail from STDIN and act on it or start an interactive debugging
+session with pry-rescue for unmached mail and any other failures.
+
+EOS
+
+opts.separator "The options are as follows:"
+
+options = {}
+
+opts.on '--noop', "dry-run to show what would be done" do
+  options[:noop] = true
+end
+
+opts.parse!
+
+if ARGV.size != 0
+  opts.fail "wrong # arguments (try --help)"
+end
+
+# Use uninstalled sources when started from the source directory.
+if libdir = File.expand_path('../../lib', __FILE__) and
+  File.file? "#{libdir}/monkey/process_mail.rb"
+
+  $LOAD_PATH.unshift libdir
+end
+
+require 'pry-rescue'
+
+require 'monkey/process_mail'
+
+# Create a special Mailman application which reads a single message
+# from STDIN and then re-opens STDIN from the controlling terminal
+# before processing it.
+app = Monkey::ProcessMail::Application.new do
+  # Evaluage all route providers do define the application's routes.
+  instance_eval(&Monkey::ProcessMail::TimeRecording)
+
+  # Specify the default behaviour for unmatched messages.
+  default do
+    raise "umatched message"
+  end
+end
+
+# FIXME: provide an application configuration interface
+$noop = options[:noop]
+
+# Let me debug failed expectations and other application errors.
+Pry.rescue { app.run }

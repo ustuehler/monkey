@@ -1,0 +1,45 @@
+Return-Path: <foo@example.com>
+X-Original-To: foo@example.com
+Delivered-To: foo@example.com
+Received: from [1.2.3.4]
+	by mail.example.com (Postfix) with ESMTPSA id 42BFA57C790
+	for <foo@example.com>; Mon, 29 Apr 2013 16:54:52 +0200 (CEST)
+Date: Mon, 29 Apr 2013 16:54:50 +0200
+Subject: Time Recording Report E4, 01.03.2013 - 31.03.2013
+Message-ID: <archto2af9dgnlkwlkja2l0o.1367247290500@email.android.com>
+From: Foo Bar <foo@example.com>
+To: Foo <foo@example.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="--_com.android.email_1450965329540560"
+
+----_com.android.email_1450965329540560
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+
+VGltZSBSZWNvcmRpbmcgUmVwb3J0IEU0LCAwMS4wMy4yMDEzIC0gMzEuMDMuMjAxMwpjcmVhdGVk
+IG9uIDI5LjA0LjIwMTMgMTY6NTQ6NDU=
+----_com.android.email_1450965329540560
+Content-Type: text/comma-separated-values;
+ name="timerec.20130301.20130331.e4.csv"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="timerec.20130301.20130331.e4.csv";
+ size=730
+
+RGF0ZTtEYXk7Q2xpZW50O1RvdGFsIChkZWNpbWFsKTtXb3JrIHVuaXQgbm90ZXMKMDEuMDMuMjAx
+MztGcmk7ZXhhbXBsZTswOC4yMztTb21lIHdvcmsKMDQuMDMuMjAxMztNb247ZXhhbXBsZTswMS4y
+MjtTb21lIG90aGVyIHdvcmsKMDUuMDMuMjAxMztUdWU7ZXhhbXBsZTswOC45ODtXb3JrLCB3b3Jr
+LCB3b3JrCjA2LjAzLjIwMTM7V2VkO2V4YW1wbGU7MDYuNTc7TW9yZSB3b3JrCjA3LjAzLjIwMTM7
+VGh1O2V4YW1wbGU7MDkuNjI7TW9yZSB3b3JrCjA4LjAzLjIwMTM7RnJpO2V4YW1wbGU7MDYuNDg7
+TW9yZSB3b3JrCjEyLjAzLjIwMTM7VHVlO2V4YW1wbGU7MDMuMTA7TW9yZSB3b3JrCjEzLjAzLjIw
+MTM7V2VkO2V4YW1wbGU7MDcuOTU7TW9yZSB3b3JrCjE0LjAzLjIwMTM7VGh1O2V4YW1wbGU7MDgu
+MDg7TW9yZSB3b3JrCjE1LjAzLjIwMTM7RnJpO2V4YW1wbGU7MDYuOTI7TW9yZSB3b3JrCjE4LjAz
+LjIwMTM7TW9uO2V4YW1wbGU7MDguMzc7U3RpbGwgbW9yZSB3b3JrLi4uCjE5LjAzLjIwMTM7VHVl
+O2V4YW1wbGU7MDcuOTg7U3RpbGwgbW9yZSB3b3JrLi4uCjIwLjAzLjIwMTM7V2VkO2V4YW1wbGU7
+MTAuMjU7QW5kIHNvIG9uCjIxLjAzLjIwMTM7VGh1O2V4YW1wbGU7MDkuMjA7QmxhaAoyMi4wMy4y
+MDEzO0ZyaTtleGFtcGxlOzA3LjIwO0JsYWgKMjUuMDMuMjAxMztNb247ZXhhbXBsZTswOC43MjtZ
+YWRkYSwgeWFkZGEKVG90YWw7O2V4YW1wbGU7MTE4Ljg3Owo7OzsxMTguODc7Cg==
+
+
+----_com.android.email_1450965329540560--
+
