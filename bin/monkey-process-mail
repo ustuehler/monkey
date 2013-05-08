@@ -19,6 +19,10 @@ opts.separator "Options:"
 
 options = {}
 
+opts.on '-f', '--message-file=FILE', "read message from file" do |arg|
+  options[:message_file] = arg
+end
+
 opts.on '-i', '--interactive', "permit user interactions" do
   options[:interactive] = true
 end
@@ -61,10 +65,21 @@ app = Monkey::ProcessMail::Application.new do
   end
 end
 
-# Run the application.
+# Read a single e-mail message.
+if options[:message_file]
+  message = File.read options[:message_file]
+else
+  # Read everything from STDIN.
+  message = STDIN.read
+
+  # Re-open STDIN from the current terminal so we can interact with the user.
+  STDIN.reopen(File.open('/dev/tty', 'r'))
+end
+
+# Process the message.
 if options[:interactive]
   # Let me debug failed expectations and other application errors.
-  Pry.rescue { app.run }
+  Pry.rescue { app.process message }
 else
-  app.run
+  app.process message
 end

@@ -42,23 +42,20 @@ module Monkey::ProcessMail
         def_delegators :@app, :config
       end
 
+      # Evaluate the block, now that additional methods are there.
       instance_eval(&block) if block_given?
     end
 
-    # Replace Mailman's Application#run method because it would process
-    # the message on STDIN before we get a chance to re-open STDIN from
-    # the controlling terminal.  This also means that we don't have to
-    # touch Mailman.config.rails_root to disable the automatic loading
-    # of a Rails environment.
-    def run
-      # Read a single mail message from STDIN.
-      stdin = STDIN.read
-
-      # Re-open STDIN from the current terminal so we can interact with the user.
-      STDIN.reopen(File.open('/dev/tty', 'r'))
-
-      # Process the message that was read from STDIN.
-      processor.process(stdin)
+    # Process a single e-mail message.
+    #
+    # This replaces the use of Mailman::Application#run, because that
+    # method would read and process the message on STDIN before we get
+    # a chance to re-open STDIN from the controlling terminal.  This
+    # also means that we don't have to touch Mailman.config.rails_root
+    # to disable the automatic loading of a Rails environment.
+    def process(message)
+      # Process a plain text and MIME encoded e-mail message.
+      processor.process message
     end
 
   end

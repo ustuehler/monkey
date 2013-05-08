@@ -13,8 +13,14 @@ describe 'monkey-process-mail' do
     $?.should be_success
   end
 
-  it "processes time recording reports" do
+  it "handles time recording reports" do
     output = `#{command} --noop < #{maildir}/time_recording.eml 2>&1`
+    output.should include("Processing attachment timerec.20130301.20130331.e4.csv")
+    $?.should be_success
+  end
+
+  it "can read mail from a file" do
+    output = `#{command} --noop --message-file=#{maildir}/time_recording.eml 2>&1`
     output.should include("Processing attachment timerec.20130301.20130331.e4.csv")
     $?.should be_success
   end
