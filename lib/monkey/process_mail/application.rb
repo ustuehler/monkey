@@ -14,14 +14,22 @@ module Monkey::ProcessMail
   # from STDIN and then re-opens STDIN from the controlling terminal
   # before processing it.
   #
-  # Route matching code can also use RSpec expectations and matchers,
-  # Rake::FileUtilsExt#sh and (some) HighLine methods.
+  # Route matching code can also use Monkey::ProcessMail application
+  # configuration via the #config method, RSpec expectations and
+  # matchers, Rake::FileUtilsExt#sh and (some) HighLine methods.
   class Application < Mailman::Application
+
+    # Access the application configuration, which is cloned initially
+    # from the global configuration Monkey::ProcessMail.config.
+    attr_reader :config
 
     def initialize(&block)
       super()
 
+      @config = Monkey::ProcessMail.config.clone
+
       # Make some additional methods available to all route providers.
+      app = self
       router.instance_eval do
         extend RSpec::Matchers
         extend Rake::FileUtilsExt
@@ -29,6 +37,9 @@ module Monkey::ProcessMail
         extend Forwardable
         @highline = HighLine.new
         def_delegators :@highline, :ask, :agree
+
+        @app = app
+        def_delegators :@app, :config
       end
 
       instance_eval(&block) if block_given?

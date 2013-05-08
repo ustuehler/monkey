@@ -1,8 +1,5 @@
 #!/usr/bin/env ruby
 #
-# Process mail piped into this command, e.g., storing of attachments or
-# printing (after confirmation).  To be called on individual messages from
-# Mutt, for example.
 
 require 'optparse'
 
@@ -10,16 +7,23 @@ opts = OptionParser.new
 opts.banner = <<EOS
 Usage: #{opts.program_name}
 
-Process mail from STDIN and act on it or start an interactive debugging
-session with pry-rescue for unmached mail and any other failures.
+Process a single e-mail message in plain-text/MIME format (.eml) from
+STDIN and act on it by converting and storing attachments, for example,
+or start an interactive debugging session with pry-rescue for unmached
+mail and any other failures.  To be called on individual messages from
+Mutt, for example.
 
 EOS
 
-opts.separator "The options are as follows:"
+opts.separator "Options:"
 
 options = {}
 
-opts.on '--noop', "dry-run to show what would be done" do
+opts.on '-i', '--interactive', "permit user interactions" do
+  options[:interactive] = true
+end
+
+opts.on '-n', '--noop', "dry-run to show what would be done" do
   options[:noop] = true
 end
 
@@ -40,6 +44,10 @@ require 'pry-rescue'
 
 require 'monkey/process_mail'
 
+[:interactive, :noop].each do |option|
+  Monkey::ProcessMail.config.send("#{option}=", options[option])
+end
+
 # Create a special Mailman application which reads a single message
 # from STDIN and then re-opens STDIN from the controlling terminal
 # before processing it.
@@ -53,8 +61,10 @@ app = Monkey::ProcessMail::Application.new do
   end
 end
 
-# FIXME: provide an application configuration interface
-$noop = options[:noop]
-
-# Let me debug failed expectations and other application errors.
-Pry.rescue { app.run }
+# Run the application.
+if options[:interactive]
+  # Let me debug failed expectations and other application errors.
+  Pry.rescue { app.run }
+else
+  app.run
+end

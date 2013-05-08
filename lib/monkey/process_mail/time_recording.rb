@@ -2,42 +2,47 @@ require 'pathname'
 
 require 'monkey/process_mail'
 
-Monkey::ProcessMail::TimeRecording = proc do
+module Monkey::ProcessMail
 
-  TIME_RECORDING_DIR = File.expand_path "~/.monkey/time-recording"
+  TimeRecording = proc do
 
-  subject(/Time Recording Report E4/) do
-    message.attachments.size.should == 1
+    TIME_RECORDING_DIR = File.expand_path "~/.monkey/time-recording"
 
-    attachment = message.attachments.first
-    attachment.content_type.should start_with("text/comma-separated-values;")
-    attachment.content_type_parameters.should include("name")
+    subject(/Time Recording Report E4/) do
+      message.attachments.size.should == 1
 
-    filename = attachment.content_type_parameters['name']
-    filename.should match(/^timerec\.\d+\.\d+\.e4\.csv$/)
+      attachment = message.attachments.first
+      attachment.content_type.should start_with("text/comma-separated-values;")
+      attachment.content_type_parameters.should include("name")
 
-    puts "Processing attachment #{filename}"
-    next if $noop
+      filename = attachment.content_type_parameters['name']
+      filename.should match(/^timerec\.\d+\.\d+\.e4\.csv$/)
 
-    Pathname(TIME_RECORDING_DIR).should be_directory
-    Dir.chdir(TIME_RECORDING_DIR) do
-      puts "(in #{TIME_RECORDING_DIR})"
+      puts "Processing attachment #{filename}"
+      next if config.noop
 
-      if File.file?(filename) and
-        agree("Replace #{filename}? (yes/no): ")
+      Pathname(TIME_RECORDING_DIR).should be_directory
+      Dir.chdir(TIME_RECORDING_DIR) do
+        puts "(in #{TIME_RECORDING_DIR})"
 
-        File.unlink filename
-      end
+        if File.file?(filename) and
+          config.interactive and
+          agree("Replace #{filename}? (yes/no): ")
 
-      Pathname(filename).should_not exist
-      File.open(filename, 'w') do |io|
-        io.write attachment.decoded
-      end
+          File.unlink filename
+        end
 
-      if agree("Run rake? (yes/no): ")
-        sh "rake"
+        Pathname(filename).should_not exist
+        File.open(filename, 'w') do |io|
+          io.write attachment.decoded
+        end
+
+        if not config.interactive or agree("Run rake? (yes/no): ")
+          sh "rake"
+        end
       end
     end
+
   end
 
 end
