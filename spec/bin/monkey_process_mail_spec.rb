@@ -9,14 +9,14 @@ describe 'monkey-process-mail' do
 
   it "shows usage instructions with --help" do
     output = `#{command} --help 2>&1`
-    $?.should be_success
     output.should include("Usage: monkey-process-mail")
+    $?.should be_success
   end
 
   it "processes time recording reports" do
     output = `#{command} --noop < #{maildir}/time_recording.eml 2>&1`
-    $?.should be_success
     output.should include("Processing attachment timerec.20130301.20130331.e4.csv")
+    $?.should be_success
   end
 
 end
