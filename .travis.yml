@@ -3,3 +3,8 @@ language: ruby
 rvm:
 - "1.8.7"
 - "1.9.3"
+matrix:
+  allow_failures:
+    # Undefined method `module_eval' for #<Mailman::Router> when using
+    # Forwardable#def_delegators to import HighLine methods.
+    - rvm: 1.8.7
