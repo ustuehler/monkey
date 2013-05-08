@@ -24,7 +24,10 @@ module Monkey::ProcessMail
     attr_reader :config
 
     def initialize(&block)
-      super()
+      # Avoid passing an implicit block to super because we extend
+      # the router (created by super) with additional methods that
+      # the block can then use.  http://goo.gl/OJST1
+      super(&nil)
 
       @config = Monkey::ProcessMail.config.clone
 

@@ -6,7 +6,7 @@ module Monkey::ProcessMail
 
   TimeRecording = proc do
 
-    TIME_RECORDING_DIR = File.expand_path "~/.monkey/time-recording"
+    time_recording_dir = File.expand_path "~/.monkey/time-recording"
 
     subject(/Time Recording Report E4/) do
       message.attachments.size.should == 1
@@ -21,9 +21,9 @@ module Monkey::ProcessMail
       puts "Processing attachment #{filename}"
       next if config.noop
 
-      Pathname(TIME_RECORDING_DIR).should be_directory
-      Dir.chdir(TIME_RECORDING_DIR) do
-        puts "(in #{TIME_RECORDING_DIR})"
+      Pathname(time_recording_dir).should be_directory
+      Dir.chdir(time_recording_dir) do
+        puts "(in #{time_recording_dir})"
 
         if File.file?(filename) and
           config.interactive and
