@@ -5,13 +5,12 @@ require 'optparse'
 
 opts = OptionParser.new
 opts.banner = <<EOS
-Usage: #{opts.program_name}
+Usage: #{opts.program_name} [-in] [-f FILE]
 
 Process a single e-mail message in plain-text/MIME format (.eml) from
-STDIN and act on it by converting and storing attachments, for example,
-or start an interactive debugging session with pry-rescue for unmached
-mail and any other failures.  To be called on individual messages from
-Mutt, for example.
+STDIN or a file and act on it by converting and storing attachments,
+for example.  In interactive mode, if the mail is not matched or there
+is any other error, a debug session with pry-rescue is started.
 
 EOS
 
