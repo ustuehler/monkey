@@ -1,0 +1,19 @@
+Date;Day;Client;Total (decimal);Work unit notes
+28.02.2013;Thu;client1;08.23;Some work
+04.03.2013;Mon;client1;01.22;Some other work
+05.03.2013;Tue;client1;08.98;Work, work, work
+06.03.2013;Wed;client1;06.57;More work
+07.03.2013;Thu;client1;09.62;More work
+08.03.2013;Fri;client2;06.48;Work for another client
+12.03.2013;Tue;client1;03.10;
+13.03.2013;Wed;client1;07.95;More work
+14.03.2013;Thu;client1;08.08;More work
+15.03.2013;Fri;client2;06.92;
+18.03.2013;Mon;client1;08.37;Still more work...
+19.03.2013;Tue;client1;07.98;Still more work...
+20.03.2013;Wed;client1;10.25;And so on
+21.03.2013;Thu;example;09.20;Blah
+22.03.2013;Fri;example;07.20;
+01.04.2013;Mon;example;08.72;Yadda, yadda
+Total;;example;118.87;
+;;;118.87;
