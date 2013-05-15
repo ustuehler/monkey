@@ -8,3 +8,5 @@ Features
 
 * Automatic e-mail processing:
     * time recording reports sent from my mobile phone
+* Accounting:
+    * supports human-readable [ledger](http://ledger-cli.org) files
