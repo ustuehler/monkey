@@ -1,7 +1,5 @@
-My Personal Home/Office Monkey
+My Personal Home/Office Monkey [![Build Status](https://travis-ci.org/ustuehler/monkey.png?branch=master)](https://travis-ci.org/ustuehler/monkey)
 ==============================
-
-[![Build Status](https://travis-ci.org/ustuehler/monkey.png?branch=master)](https://travis-ci.org/ustuehler/monkey)
 
 Features
 --------
