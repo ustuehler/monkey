@@ -1,3 +1,5 @@
+require 'money'
+
 require 'monkey/accounting'
 
 module Monkey::Accounting
@@ -8,10 +10,32 @@ module Monkey::Accounting
     DATE = /\d{4}\/\d{2}\/\d{2}/
     WORD = /(?:[^ ]|.[^ ])+/
 
-    attr_reader :entries
+    attr_accessor :entries
+    attr_accessor :filename
 
+    # Load a ledger file and remember the file name.
+    #
+    # @param [String] filename
+    #   The file to load the ledger from.  It is saved in the
+    #   filename attribute for use by the #save! method.
     def self.load_file(filename)
-      File.open(filename, 'r') { |input| new input }
+      File.open(filename, 'r') do |input|
+        ledger = new(input)
+        ledger.filename = filename
+        ledger
+      end
+    end
+
+    # Save the ledger to a file.
+    #
+    # @param [String,nil] filename
+    #   The file to save the ledger to.  When `filename` is nil,
+    #   the filename attribute is consultet, which is normally set
+    #   by the #load_file method.
+    def save!(filename = nil)
+      filename ||= @filename
+      raise "no filename to save ledger to" unless filename
+      File.open(filename, 'w') { |f| f.write(self.to_s + "\n") }
     end
 
     # Create a new ledger from the specified input.
@@ -74,6 +98,7 @@ module Monkey::Accounting
             # are of the form: ACCOUNT[  AMOUNT][  ;NOTE]
             if date and line =~ /^ +(#{WORD})(?:  +(#{WORD}))?(?:  +;(.*)| *)?$/
               account, amount, note = $1, $2, $3
+              amount = Money.parse(amount) unless amount.nil?
               txns << Transaction.new([account, amount, note])
             else
               raise "invalid transaction, line #{lineno}: #{line.inspect}"
@@ -94,6 +119,26 @@ module Monkey::Accounting
       def initialize(ledger, name)
         @ledger = ledger
         super(name)
+      end
+
+      def add_entry(amount, account, *args)
+        e = Entry.new
+        e.date = Time.now.strftime '%Y/%m/%d' 
+        e.transactions = [Transaction.new([self, amount, nil])]
+        if args.size == 0
+          e.transactions << Transaction.new([account, -amount, nil])
+        elsif (args.size % 3) != 0
+          raise ArgumentError, "invalid number of arguments: #{args.inspect}"
+        else
+          split_amount = args.shift
+          e.transactions << Transaction.new([account, -split_amount, nil])
+          while args.size >= 2
+            account, split_amount = args.shift(2)
+            e.transactions << Transaction.new([account, -split_amount, nil])
+          end
+        end
+        @ledger.entries << e
+        e
       end
 
       def entries
@@ -171,8 +216,8 @@ module Monkey::Accounting
       index_accessor :note, 2
 
       def to_s
-        "  #{account}" +
-          (amount ? "  #{amount}" : "") +
+        "    #{account}" +
+          (amount ? "  #{amount} #{amount.currency}" : "") +
           (note ? "  ;#{note}" : "")
       end
     end
