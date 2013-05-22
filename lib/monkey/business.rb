@@ -12,6 +12,11 @@ module Monkey::Business
   # @return [Monkey::Accounting::Ledger]
   #   The ledger instance to use for business accounting.
   def self.ledger
-    Monkey::Accounting.default_ledger
+    if ledger_file = Monkey.config.business.ledger_file
+      ledger_file = File.expand_path(ledger_file)
+      @ledger ||= Monkey::Accounting::Ledger.load_file(ledger_file)
+    else
+      Monkey::Accounting.default_ledger
+    end
   end
 end
