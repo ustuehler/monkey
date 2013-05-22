@@ -4,7 +4,7 @@ require 'monkey/accounting'
 
 module Monkey::Accounting
 
-  # Human-readable ledger (http://ledger-cli.org)
+  # Human-readable accounting ledger (http://ledger-cli.org)
   class Ledger
 
     DATE = /\d{4}\/\d{2}\/\d{2}/
@@ -13,11 +13,10 @@ module Monkey::Accounting
     attr_accessor :entries
     attr_accessor :filename
 
-    # Load a ledger file and remember the file name.
+    # Loads a ledger file and remember the file name.
     #
-    # @param [String] filename
-    #   The file to load the ledger from.  It is saved in the
-    #   filename attribute for use by the #save! method.
+    # @param [String] filename  The file to load the ledger from.
+    #  It is saved in the +filename+ attribute for use by {#save!}.
     def self.load_file(filename)
       File.open(filename, 'r') do |input|
         ledger = new(input)
@@ -26,34 +25,33 @@ module Monkey::Accounting
       end
     end
 
-    # Save the ledger to a file.
+    # Saves the ledger to a file.
     #
-    # @param [String,nil] filename
-    #   The file to save the ledger to.  When `filename` is nil,
-    #   the filename attribute is consultet, which is normally set
-    #   by the #load_file method.
+    # @param [String,nil] filename  The file to save the ledger to.
+    #  When `filename` is nil, the filename attribute is consulted,
+    #  which is normally set by the {#load_file} method.
     def save!(filename = nil)
       filename ||= @filename
       raise "no filename to save ledger to" unless filename
       File.open(filename, 'w') { |f| f.write(self.to_s + "\n") }
     end
 
-    # Create a new ledger from the specified input.
+    # Creates a new ledger from the specified input.
     #
-    # @param [String,IO] The ledger input in human-readable format.
+    # @param [String,IO]  The ledger input in human-readable format.
     #   If `input` is not specified, an empty ledger is created.
     def initialize(input = "")
       @entries = []
       parse input
     end
 
-    # Parse the specified input in human-readable form and remember
+    # Parses the specified input in human-readable form and remembers
     # the parsed entries.
     #
-    # @param [String,IO] The ledger input in human-readable format.
-    #   If `input` is not specified, an empty ledger is created.
-    # @return [Array] The entries that were parsed and appended to
-    #   the already existing entries.
+    # @param [String,IO]  The ledger input in human-readable format.
+    #  If `input` is not specified, an empty ledger is created.
+    # @return [Array]  The entries that were parsed and appended to
+    #  the already existing entries.
     def parse(input)
       case input
       when IO
@@ -121,6 +119,21 @@ module Monkey::Accounting
         super(name)
       end
 
+      # Adds a new entry to the ledger.
+      #
+      # @param [Money, String] amount  The amount transferred to this
+      #  account, which may be negative.
+      # @param [Account, String] account  The account against which the
+      #  first transaction is balanced.  The negated +amount+ is either
+      #  added or subtracted from that account.
+      # @param [Array<Money, Account, String>] args  The first of the
+      #  remaining arguments is interpreted as an optional split amount
+      #  to balance against +account+ instead of the +amount+ given.  Any
+      #  arguments after the first are interpreted as tuples of the form
+      #  +[account, split_amount[, account, split_amount, ...]]+ and specify
+      #  additional transactions for this entry that move partial amounts
+      #  to or from other accounts.
+      # @return [Entry]  The entry that was added to the ledger.
       def add_entry(amount, account, *args)
         e = Entry.new
         e.date = Time.now.strftime '%Y/%m/%d' 
