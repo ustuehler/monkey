@@ -1,13 +1,18 @@
 require 'monkey'
 
+# +Monkey::ProcessMail+ is the root module for an application which
+# matches e-mail messages based on certain criteria (such as sender,
+# subject or attachments) and then acts on the message as appropriate.
+#
+# @see Application
+# @see config
 module Monkey::ProcessMail
   autoload :Application, 'monkey/process_mail/application'
+  autoload :Config, 'monkey/process_mail/config'
   autoload :TimeRecording, 'monkey/process_mail/time_recording'
-  autoload :Configuration, 'monkey/process_mail/configuration'
 
-  # Access the global Monkey::ProcessMail configuration.
-  # @return [Configuration]
+  # Returns the global configuration for the +ProcessMail+ module.
   def self.config
-    @config ||= Configuration.new
+    Monkey.config.process_mail
   end
 end

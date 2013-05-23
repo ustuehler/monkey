@@ -18,16 +18,16 @@ opts.separator "Options:"
 
 options = {}
 
-opts.on '-f', '--message-file=FILE', "read message from file" do |arg|
-  options[:message_file] = arg
+opts.on '-f', '--message-file=FILE', "read message from file" do |v|
+  options[:message_file] = v
 end
 
-opts.on '-i', '--interactive', "permit user interactions" do
-  options[:interactive] = true
+opts.on '-i', '--[no-]interactive', "permit user interactions" do |v|
+  options[:interactive] = v
 end
 
-opts.on '-n', '--noop', "dry-run to show what would be done" do
-  options[:noop] = true
+opts.on '-n', '--[no-]noop', "dry-run to show what would be done" do |v|
+  options[:noop] = v
 end
 
 opts.parse!
@@ -48,7 +48,8 @@ require 'pry-rescue'
 require 'monkey/process_mail'
 
 [:interactive, :noop].each do |option|
-  Monkey::ProcessMail.config.send("#{option}=", options[option])
+  Monkey::ProcessMail.config.send("#{option}=", options[option]) \
+    if options.has_key? option
 end
 
 # Create a special Mailman application which reads a single message
@@ -76,7 +77,7 @@ else
 end
 
 # Process the message.
-if options[:interactive]
+if Monkey::ProcessMail.config.interactive
   # Let me debug failed expectations and other application errors.
   Pry.rescue { app.process message }
 else

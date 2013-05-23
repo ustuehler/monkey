@@ -1,11 +1,9 @@
-# My personal "home and office monkey" that does things I don't like
-# to do manually.
+# +Monkey+ is the root module for all components of my "home and office
+# monkey" - a toolbox that automates things I don't like to do manually.
 #
 # The configuration for all modules is managed via the {Monkey::Config}
 # class.  The current global configuration, which is normally parsed from
-# a configuration file, can be retrieved via {Monkey.config}.  The default
-# configuration, which would be used if there was no configuration file to
-# parse, is returned by {Monkey.default_config}.
+# a configuration file, can be retrieved via {Monkey.config}.
 #
 # @see Monkey::Accounting
 # @see Monkey::Business
