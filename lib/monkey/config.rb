@@ -42,8 +42,9 @@ module Monkey
     end
 
     def class_for_section(section)
-      # TODO: CamelCase the section when capitalization isn't enough
-      section_const = section.capitalize
+      # "Camelize" the section name: "process_mail" => "ProcessMail"
+      section_const = section.to_s.split('_').map {|w| w.capitalize}.join
+
       parent_module = Module.nesting[1]
       if parent_module.const_defined? section_const
         section_module = parent_module.const_get(section_const)
