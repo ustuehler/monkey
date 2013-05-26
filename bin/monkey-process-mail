@@ -3,6 +3,15 @@
 
 require 'optparse'
 
+# Use uninstalled sources when started from the source directory.
+if libdir = File.expand_path('../../lib', __FILE__) and
+  File.file? "#{libdir}/monkey/process_mail.rb"
+
+  $LOAD_PATH.unshift libdir
+end
+
+require 'monkey/process_mail'
+
 opts = OptionParser.new
 opts.banner = <<EOS
 Usage: #{opts.program_name} [-in] [-f FILE]
@@ -23,11 +32,11 @@ opts.on '-f', '--message-file=FILE', "read message from file" do |v|
 end
 
 opts.on '-i', '--[no-]interactive', "permit user interactions" do |v|
-  options[:interactive] = v
+  Monkey::ProcessMail.config.interactive = v
 end
 
 opts.on '-n', '--[no-]noop', "dry-run to show what would be done" do |v|
-  options[:noop] = v
+  Monkey::ProcessMail.config.noop = v
 end
 
 opts.parse!
@@ -36,21 +45,7 @@ if ARGV.size != 0
   opts.fail "wrong # arguments (try --help)"
 end
 
-# Use uninstalled sources when started from the source directory.
-if libdir = File.expand_path('../../lib', __FILE__) and
-  File.file? "#{libdir}/monkey/process_mail.rb"
-
-  $LOAD_PATH.unshift libdir
-end
-
 require 'pry-rescue'
-
-require 'monkey/process_mail'
-
-[:interactive, :noop].each do |option|
-  Monkey::ProcessMail.config.send("#{option}=", options[option]) \
-    if options.has_key? option
-end
 
 # Create a special Mailman application which reads a single message
 # from STDIN and then re-opens STDIN from the controlling terminal
