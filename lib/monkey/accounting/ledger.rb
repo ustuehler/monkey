@@ -156,9 +156,13 @@ module Monkey::Accounting
       def balance
         entries.map { |e|
           e.transactions.select { |t|
-            t.account == self
+            t.account == self or t.account.start_with? "#{self}:"
           }.map { |t|
-            t.amount
+            if t.amount.nil?
+              e.null_amount
+            else
+              t.amount
+            end
           }.reduce(:+) or Amount.zero
         }.reduce(:+) or Amount.zero
       end
@@ -166,7 +170,7 @@ module Monkey::Accounting
       def entries
         @ledger.entries.select { |e|
           e.transactions.any? { |t|
-            t.account == self
+            t.account == self or t.account.start_with? "#{self}:"
           }
         }
       end
@@ -179,7 +183,14 @@ module Monkey::Accounting
     def accounts
       entries.map { |e|
         e.transactions.map { |t|
-          t.account
+          a = t.account
+          alist = []
+          while last_separator = a.rindex(':')
+            alist << a
+            a = a[0...last_separator]
+          end
+          alist << a
+          alist
         }
       }.flatten.uniq.map { |a|
         account a
@@ -221,7 +232,40 @@ module Monkey::Accounting
       # Returns the total balance for this entry, which should
       # normally be zero.
       def balance
-        transactions.map { |e| e.amount }.reduce(:+)
+        transactions.map { |t|
+          if t.amount.nil?
+            null_amount
+          else
+            t.amount
+          end
+        }.reduce(:+)
+      end
+
+      # If there's a transaction with a "null" amount in this entry,
+      # returns the amount of that transaction, which is the amount
+      # that would balance the entry.  If there is no transaction
+      # with a null amount, returns nil.
+      def null_amount
+        non_null_total = nil
+        null_txn = nil
+
+        transactions.each { |t|
+          if t.amount.nil?
+            if null_txn.nil?
+              null_txn = t
+            else
+              raise "only one transaction with null amount is allowed"
+            end
+          else
+            if non_null_total.nil?
+              non_null_total = t.amount
+            else
+              non_null_total += t.amount
+            end
+          end
+        }
+
+        -non_null_total
       end
 
       def to_s
@@ -245,7 +289,7 @@ module Monkey::Accounting
 
       def to_s
         "    #{account}" +
-          (amount ? "  #{amount} #{amount.currency}" : "") +
+          (amount ? "  #{amount}" : "") +
           (note ? "  ;#{note}" : "")
       end
     end
