@@ -1,5 +1,3 @@
-require 'money'
-
 require 'monkey/accounting'
 
 module Monkey::Accounting
@@ -96,7 +94,7 @@ module Monkey::Accounting
             # are of the form: ACCOUNT[  AMOUNT][  ;NOTE]
             if date and line =~ /^ +(#{WORD})(?:  +(#{WORD}))?(?:  +;(.*)| *)?$/
               account, amount, note = $1, $2, $3
-              amount = Money.parse(amount) unless amount.nil?
+              amount = Amount.parse(amount) unless amount.nil?
               txns << Transaction.new([account, amount, note])
             else
               raise "invalid transaction, line #{lineno}: #{line.inspect}"
@@ -121,12 +119,12 @@ module Monkey::Accounting
 
       # Adds a new entry to the ledger.
       #
-      # @param [Money, String] amount  The amount transferred to this
+      # @param [Amount, String] amount  The amount transferred to this
       #  account, which may be negative.
       # @param [Account, String] account  The account against which the
       #  first transaction is balanced.  The negated +amount+ is either
       #  added or subtracted from that account.
-      # @param [Array<Money, Account, String>] args  The first of the
+      # @param [Array<Amount, Account, String>] args  The first of the
       #  remaining arguments is interpreted as an optional split amount
       #  to balance against +account+ instead of the +amount+ given.  Any
       #  arguments after the first are interpreted as tuples of the form

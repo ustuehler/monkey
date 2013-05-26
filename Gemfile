@@ -2,7 +2,6 @@
 source "https://rubygems.org"
 
 # accounting and customer relations management (and invoices, etc.)
-gem 'money'
 gem 'data_mapper'
 gem 'dm-yaml-adapter'
 

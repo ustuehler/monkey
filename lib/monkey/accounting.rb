@@ -5,6 +5,8 @@ require 'monkey'
 # @see Monkey::Accounting::Ledger
 # @see default_ledger
 module Monkey::Accounting
+  autoload :Amount, 'monkey/accounting/amount'
+  autoload :Commodity, 'monkey/accounting/commodity'
   autoload :Ledger, 'monkey/accounting/ledger'
 
   # Returns the file name of the default ledger, which may or may not

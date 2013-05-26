@@ -64,7 +64,8 @@ module Monkey::Business
 
       def initialize(description, quantity, unit, unit_price)
         @description, @quantity, @unit, @unit_price =
-          description, quantity.to_i, unit, Money.parse(unit_price)
+          description, quantity.to_i, unit,
+          Monkey::Accounting::Amount.parse(unit_price)
       end
 
       def to_a
