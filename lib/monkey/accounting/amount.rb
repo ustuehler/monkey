@@ -25,9 +25,13 @@ module Monkey::Accounting
           else
             quantity.to_s
           end
-      @precision = s.length - s.rindex('.') - 1
+      if decimal_point = s.rindex('.')
+        @precision = s.length - decimal_point - 1
+      else
+        @precision = 0
+      end
 
-      @commodity = commodity
+      @commodity = Commodity.coerce(commodity)
       @quantity = BigDecimal.new(quantity)
     end
 
@@ -36,6 +40,10 @@ module Monkey::Accounting
 
     def *(x); numeric_op x, :*; end
     def /(x); numeric_op x, :/; end
+
+    def ==(x)
+      @commodity == x.commodity and @quantity == x.quantity
+    end
 
     def -@
       a = self.class.new @commodity, -@quantity
@@ -55,6 +63,12 @@ module Monkey::Accounting
       else
         raise ArgumentError, "can't coerce #{value.inspect} into #{self}"
       end
+    end
+
+    # Return the zero amount of any commodity.  By default the zero
+    # amount of the "null" commodity is returned.
+    def self.zero(commodity = "")
+      new commodity, '0'
     end
 
     COMMODITY_STYLE_DEFAULT   = 0x0000
@@ -209,8 +223,7 @@ module Monkey::Accounting
         quant_str = int +
           ((commodity.flags & COMMODITY_STYLE_EUROPEAN) != 0 ?
            ',' : '.') +
-          ('0' * (precision - frac.length)) +
-          frac
+          frac + ('0' * (precision - frac.length))
       end
 
       if (commodity.flags & COMMODITY_STYLE_SUFFIXED) != 0
@@ -233,7 +246,7 @@ module Monkey::Accounting
 
       if x.commodity != @commodity
         raise ArgumentError, "non-matching commodity for #{x}, " +
-          "expected #{@commodity}"
+          "expected #{@commodity.inspect}"
       end
 
       new_quantity = @quantity.send(op, x.quantity)

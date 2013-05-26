@@ -21,6 +21,16 @@ module Monkey::Accounting
 
     @@table ||= {}
 
+    def self.coerce(value)
+      case value
+      when Commodity
+        value
+      else
+        find(value.to_s) or raise ArgumentError,
+          "can't coerce #{value.inspect} into #{self}"
+      end
+    end
+
     def self.create(symbol)
       symbol = symbol.to_s
       if @@table.has_key? symbol
@@ -37,6 +47,7 @@ module Monkey::Accounting
     end
 
     @@null_commodity ||= Commodity.create('')
+    @@default_commodity = nil unless defined? @@default_commodity
 
     def self.null_commodity
       @@null_commodity

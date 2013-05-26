@@ -11,7 +11,7 @@ module Monkey::Accounting
     attr_accessor :entries
     attr_accessor :filename
 
-    # Loads a ledger file and remember the file name.
+    # Loads a ledger file and remembers the file name.
     #
     # @param [String] filename  The file to load the ledger from.
     #  It is saved in the +filename+ attribute for use by {#save!}.
@@ -152,6 +152,17 @@ module Monkey::Accounting
         e
       end
 
+      # Returns the total balance for this account.
+      def balance
+        entries.map { |e|
+          e.transactions.select { |t|
+            t.account == self
+          }.map { |t|
+            t.amount
+          }.reduce(:+) or Amount.zero
+        }.reduce(:+) or Amount.zero
+      end
+
       def entries
         @ledger.entries.select { |e|
           e.transactions.any? { |t|
@@ -206,6 +217,12 @@ module Monkey::Accounting
       index_accessor :code, 3
       index_accessor :description, 4
       index_accessor :transactions, 5
+
+      # Returns the total balance for this entry, which should
+      # normally be zero.
+      def balance
+        transactions.map { |e| e.amount }.reduce(:+)
+      end
 
       def to_s
         date + (effective_date ? "=#{effective_date}" : "") +

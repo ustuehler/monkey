@@ -74,6 +74,18 @@ module Monkey::Accounting
       (a - b).to_s.should == '-4.99 EUR'
     end
 
+    it "keeps display precision of fractional parts" do
+      a = Amount.parse('0.550')
+      b = Amount.parse('0.550')
+      (a + b).to_s.should == '1.100'
+    end
+
+    it "can compare differently formatted values for equality" do
+      a = Amount.parse('0.550')
+      b = Amount.parse('0.55')
+      a.should == b
+    end
+
   end
 
 end
