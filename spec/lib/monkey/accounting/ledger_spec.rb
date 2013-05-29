@@ -14,12 +14,24 @@ module Monkey::Accounting
       describe "accounts" do
         subject { ledger.accounts }
 
-        it { should =~ ["Assets:Bank:Checking",
-                        "Assets:Brokerage",
-                        "Equity:Opening Balances",
-                        "Expenses:Books",
-                        "Income:Salary",
-                        "Liabilities:MasterCard"] }
+        it {
+          should =~ [
+            # accounts referenced in transactions
+            "Assets:Bank:Checking",
+            "Assets:Brokerage",
+            "Equity:Opening Balances",
+            "Expenses:Books",
+            "Income:Salary",
+            "Liabilities:MasterCard",
+            # parent accounts
+            "Assets",
+            "Assets:Bank",
+            "Equity",
+            "Expenses",
+            "Income",
+            "Liabilities"
+          ]
+        }
       end
     end
   end
