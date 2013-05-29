@@ -211,13 +211,20 @@ module Monkey::Accounting
         int, frac = quantity.round(precision).to_s('F').split('.')
 
         if (commodity.flags & COMMODITY_STYLE_THOUSANDS) != 0
-          int_ts = ''
-          while int.length > 3
-            int_left = int[0...-3]
-            int_ts = "#{int_left},#{int[-3..-1]}"
-            int = int_left
-          end
-          int = int_ts
+          negative = if int[0] == '-'
+                       int = int[1..-1]
+                       true
+                     else
+                       false
+                     end
+
+          ts = (commodity.flags & COMMODITY_STYLE_EUROPEAN) != 0 ?  '.' : ','
+
+          int = int.reverse.chars.each_slice(3).map { |digits|
+            digits.join.reverse
+          }.reverse.join(ts)
+
+          int = "-#{int}" if negative
         end
 
         quant_str = int +
