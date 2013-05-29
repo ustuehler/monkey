@@ -45,7 +45,12 @@ module Monkey
       # "Camelize" the section name: "process_mail" => "ProcessMail"
       section_const = section.to_s.split('_').map {|w| w.capitalize}.join
 
-      parent_module = Module.nesting[1]
+      # "Constantize" the parent module or class name.
+      parent_name = self.class.name.split('::')[0...-1]
+      parent_module = parent_name.inject(Object) { |parent, name|
+        parent.const_get name
+      }
+
       if parent_module.const_defined? section_const
         section_module = parent_module.const_get(section_const)
         if section_module.const_defined? :Config
