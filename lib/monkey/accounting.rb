@@ -6,32 +6,39 @@ require 'monkey'
 # @see default_ledger
 module Monkey::Accounting
   autoload :Amount, 'monkey/accounting/amount'
+  autoload :BankStatement, 'monkey/accounting/bank_statement'
   autoload :Commodity, 'monkey/accounting/commodity'
+  autoload :Config, 'monkey/accounting/config'
+  autoload :Entry, 'monkey/accounting/entry'
   autoload :Ledger, 'monkey/accounting/ledger'
+  autoload :Transaction, 'monkey/accounting/transaction'
 
-  # Returns the file name of the default ledger, which may or may not
-  # exist initially.
+  # Returns the file name of the default ledger.  The file name is
+  # looked up in the following order (first non-empty value wins):
   #
-  # The file name is derived from the environment variable LEDGER_FILE
-  # or from the --file (or -f) option in the user's ~/.ledgerrc file.
-  #
-  # @return [String]  The file name of the default ledger.
+  # 1. result of {Monkey.config.accounting.default_ledger_file}
+  # 2. environment variable LEDGER_FILE
+  # 3. --file (or -f) option in <tt>~/.ledgerrc</tt> file
   def self.default_ledger_file
-    return ENV['LEDGER_FILE'] if ENV.has_key? 'LEDGER_FILE'
+    if filename = Monkey.config.accounting.default_ledger_file
+      return File.expand_path(filename)
+    end
 
-    ledgerrc = File.expand_path('~/.ledgerrc')
+    if ENV.has_key? 'LEDGER_FILE'
+      return File.expand_path(ENV['LEDGER_FILE'])
+    end
 
-    if File.exists? ledgerrc
+    if File.exists?(ledgerrc = File.expand_path('~/.ledgerrc'))
       File.open(ledgerrc, 'r') do |f|
         re = /^\s*(?:-f|--file)(?:=?|\s+)([^\s].*)$/
         if f.read.lines.any? { |line| line.match(re) }
-          ledger_file = $1
-          return File.expand_path(ledger_file)
+          filename = $1
+          return File.expand_path(filename)
         end
       end
     end
 
-    raise "no ledger file set in ~/.ledgerrc or LEDGER_FILE"
+    raise "no default ledger filename configured"
   end
 
   # Returns the default ledger loaded from {default_ledger_file}.
@@ -40,4 +47,5 @@ module Monkey::Accounting
   def self.default_ledger
     @ledger ||= Ledger.load_file default_ledger_file
   end
+
 end

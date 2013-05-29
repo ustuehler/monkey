@@ -1,4 +1,4 @@
-require 'monkey/business'
+require 'monkey'
 
 module Monkey::Business
 

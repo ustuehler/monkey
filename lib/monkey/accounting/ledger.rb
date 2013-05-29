@@ -82,7 +82,7 @@ module Monkey::Accounting
             # NUMBER denotes the beginning of an entry of the form:
             # DATE[=EDATE] [*|!] [(CODE)] DESC
             if line =~ /^(#{DATE})(?:=(#{DATE}))?(?: ([*!]))?(?: \(([^)]+)\))? (.*)$/
-              entries << Entry.new([date, edate, flag, code, desc, txns]) if date
+              entries << Entry.new(date, edate, flag, code, desc, txns) if date
               date, edate, flag, code, desc = $1, $2, $3, $4, $5
               txns = []
             else
@@ -95,7 +95,7 @@ module Monkey::Accounting
             if date and line =~ /^ +(#{WORD})(?:  +(#{WORD}))?(?:  +;(.*)| *)?$/
               account, amount, note = $1, $2, $3
               amount = Amount.parse(amount) unless amount.nil?
-              txns << Transaction.new([account, amount, note])
+              txns << Transaction.new(account, amount, note)
             else
               raise "invalid transaction, line #{lineno}: #{line.inspect}"
             end
@@ -104,11 +104,28 @@ module Monkey::Accounting
           end
         end
       rescue EOFError
-        entries << Entry.new([date, edate, flag, code, desc, txns]) if date
+        entries << Entry.new(date, edate, flag, code, desc, txns) if date
       end
 
       @entries += entries
       entries
+    end
+
+    # Returns the earliest entry's date.
+    def start_date
+      entries.map { |e| Date.parse e.date }.sort.first
+    end
+
+    # Returns the latest entry's date.
+    def end_date
+      entries.map { |e| Date.parse e.date }.sort.last
+    end
+
+    # Return the total balance computed over all top-level accounts in
+    # this ledger.  This amount should always be zero due to double-entry
+    # accounting.
+    def balance
+      accounts.reject { |a| a.include? ':' }.map { |a| a.balance }.reduce(:+)
     end
 
     class Account < String
@@ -133,19 +150,18 @@ module Monkey::Accounting
       #  to or from other accounts.
       # @return [Entry]  The entry that was added to the ledger.
       def add_entry(amount, account, *args)
-        e = Entry.new
-        e.date = Time.now.strftime '%Y/%m/%d' 
-        e.transactions = [Transaction.new([self, amount, nil])]
+        e = Entry.new(Time.now.strftime '%Y/%m/%d')
+        e.transactions = [Transaction.new(self, amount)]
         if args.size == 0
-          e.transactions << Transaction.new([account, -amount, nil])
+          e.transactions << Transaction.new(account, -amount)
         elsif (args.size % 3) != 0
           raise ArgumentError, "invalid number of arguments: #{args.inspect}"
         else
           split_amount = args.shift
-          e.transactions << Transaction.new([account, -split_amount, nil])
+          e.transactions << Transaction.new(account, -split_amount)
           while args.size >= 2
             account, split_amount = args.shift(2)
-            e.transactions << Transaction.new([account, -split_amount, nil])
+            e.transactions << Transaction.new(account, -split_amount)
           end
         end
         @ledger.entries << e
@@ -203,95 +219,6 @@ module Monkey::Accounting
 
     def to_s
       entries.map { |e| e.to_s }.join("\n\n")
-    end
-
-    # Helper module to make array fields accessible by name.
-    module IndexAccessor
-      def index_accessor(name, index)
-        define_method(name) do
-          self[index]
-        end
-
-        define_method("#{name}=") do |value|
-          self[index] = value
-        end
-      end
-    end
-
-    # Single ledger entry with two or more transactions.
-    class Entry < Array
-      extend IndexAccessor
-
-      index_accessor :date, 0
-      index_accessor :effective_date, 1
-      index_accessor :flag, 2
-      index_accessor :code, 3
-      index_accessor :description, 4
-      index_accessor :transactions, 5
-
-      # Returns the total balance for this entry, which should
-      # normally be zero.
-      def balance
-        transactions.map { |t|
-          if t.amount.nil?
-            null_amount
-          else
-            t.amount
-          end
-        }.reduce(:+)
-      end
-
-      # If there's a transaction with a "null" amount in this entry,
-      # returns the amount of that transaction, which is the amount
-      # that would balance the entry.  If there is no transaction
-      # with a null amount, returns nil.
-      def null_amount
-        non_null_total = nil
-        null_txn = nil
-
-        transactions.each { |t|
-          if t.amount.nil?
-            if null_txn.nil?
-              null_txn = t
-            else
-              raise "only one transaction with null amount is allowed"
-            end
-          else
-            if non_null_total.nil?
-              non_null_total = t.amount
-            else
-              non_null_total += t.amount
-            end
-          end
-        }
-
-        -non_null_total
-      end
-
-      def to_s
-        date + (effective_date ? "=#{effective_date}" : "") +
-          (flag ? " #{flag}" : "") +
-          (code ? " (#{code})" : "") +
-          (description ? " #{description}" : "") +
-          (transactions.empty? ? "" :
-           "\n" + transactions.map { |t| t.to_s }.join("\n"))
-      end
-    end
-
-    # Single transaction in a ledger entry.  There must be at least two
-    # transactions per entry (double accounting).
-    class Transaction < Array
-      extend IndexAccessor
-
-      index_accessor :account, 0
-      index_accessor :amount, 1
-      index_accessor :note, 2
-
-      def to_s
-        "    #{account}" +
-          (amount ? "  #{amount}" : "") +
-          (note ? "  ;#{note}" : "")
-      end
     end
 
   end

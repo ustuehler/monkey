@@ -46,6 +46,10 @@ module Monkey::Accounting
       @@table[symbol]
     end
 
+    def self.find_or_create(symbol)
+      find(symbol) or create(symbol)
+    end
+
     @@null_commodity ||= Commodity.create('')
     @@default_commodity = nil unless defined? @@default_commodity
 
