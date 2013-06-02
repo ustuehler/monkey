@@ -26,7 +26,7 @@ module Monkey::Business
 
   # XXX: DataMapper requires a default repository
   unless DataMapper::Repository.adapters.has_key? :default
-    DataMapper.setup :default, "yaml:#{File.expand_path 'sqlite3:memory:'}"
+    DataMapper.setup :default, 'sqlite::memory:'
   end
 
 end
