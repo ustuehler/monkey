@@ -51,8 +51,11 @@ require 'pry-rescue'
 # from STDIN and then re-opens STDIN from the controlling terminal
 # before processing it.
 app = Monkey::ProcessMail::Application.new do
-  # Evaluage all route providers do define the application's routes.
-  instance_eval(&Monkey::ProcessMail::TimeRecording)
+  # Evaluage all route providers to define the application's routes.
+  Monkey::ProcessMail.constants.each do |const_name|
+    const = Monkey::ProcessMail.const_get const_name
+    instance_eval(&const) if const.is_a? Proc
+  end
 
   # Specify the default behaviour for unmatched messages.
   default do
