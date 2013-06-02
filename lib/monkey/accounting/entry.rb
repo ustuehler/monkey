@@ -88,6 +88,12 @@ module Monkey::Accounting
       -non_null_total
     end
 
+    # Returns the list of all accounts which are referenced in the
+    # transactions of this entry.
+    def accounts
+      transactions.map { |t| t.account }
+    end
+
     DATE_FORMAT = '%Y/%m/%d'
 
     def to_s

@@ -128,6 +128,15 @@ module Monkey::Accounting
       accounts.reject { |a| a.include? ':' }.map { |a| a.balance }.reduce(:+)
     end
 
+    # Deletes matching entries and returns the list of deleted entries.
+    # The block is called for each existing entry and the entry is deleted
+    # if the block yields a true value.
+    def delete_entries!(&block)
+      entries.select { |e| yield e }.each { |e|
+        entries.delete e
+      }
+    end
+
     class Account < String
       def initialize(ledger, name)
         @ledger = ledger
