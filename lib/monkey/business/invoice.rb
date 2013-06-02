@@ -6,26 +6,47 @@ module Monkey::Business
   class Invoice
     include Resource
 
-    property :number, Integer, :key => true
-    property :items, Csv
+    belongs_to :customer, :key => true, :required => false
+    belongs_to :supplier, :key => true, :required => false
 
-    belongs_to :customer
+    property :number, String, :key => true
+    property :items, Csv
 
     # Get a ledger entry for this invoice.
     def entry
-      customer.receivable_account.entries.find { |e| e.code == number.to_s }
+      primary_account = customer_or_supplier proc { |customer|
+        customer.receivable_account
+      }, proc { |supplier|
+        supplier.payable_account
+      }
+
+      primary_account.entries.find { |e| e.code == number.to_s }
     end
 
     # Get or create a ledger entry for this invoice.
     def entry!
+      first_account, second_account, tax_account, description =
+        customer_or_supplier proc { |customer|
+          [customer.receivable_account,
+           customer.sales_account,
+           customer.tax_account,
+           customer.name]
+        }, proc { |supplier|
+          [supplier.payable_account,
+           supplier.purchases_account,
+           supplier.input_tax_account,
+           supplier.name]
+        }
+
       unless e = self.entry
-        e = customer.receivable_account.add_entry amount, \
-          customer.sales_account, amount_net,
-          customer.tax_account, amount_tax
-        e.description = customer.name
+        e = first_account.add_entry amount, \
+          second_account, amount_net,
+          tax_account, amount_tax
+        e.description = description
         e.code = number.to_s
         e.flag = '!'
       end
+
       e
     end
 
@@ -65,13 +86,28 @@ module Monkey::Business
       def initialize(description, quantity, unit, unit_price)
         @description, @quantity, @unit, @unit_price =
           description, quantity.to_i, unit,
-          Monkey::Accounting::Amount.parse(unit_price)
+          Monkey::Accounting::Amount.coerce(unit_price)
       end
 
       def to_a
         [@description, @quantity, @unit, @unit_price]
       end
     end
+
+    private
+
+    def customer_or_supplier(customer_block, supplier_block)
+      if customer_id and supplier_id
+        raise "invoice has both a customer and supplier"
+      elsif customer_id
+        customer_block.call customer
+      elsif supplier_id
+        supplier_block.call supplier
+      else
+        raise "neither a customer nor a supplier for this invoice"
+      end
+    end
+
   end
 
 end

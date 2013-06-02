@@ -19,7 +19,7 @@ module Monkey::Business
     end
 
     def default_purchases_account_name
-      Monkey.config.business.default_purchases_account
+      Monkey.config.business.default_purchases_account + ':' + name
     end
 
     def default_input_tax_account_name
@@ -30,8 +30,8 @@ module Monkey::Business
       Monkey::Business.ledger.account(payable_account_name || default_payable_account_name)
     end
 
-    def purchages_account
-      Monkey::Business.ledger.account(purchages_account_name || default_purchages_account_name)
+    def purchases_account
+      Monkey::Business.ledger.account(purchases_account_name || default_purchases_account_name)
     end
 
     def input_tax_account
