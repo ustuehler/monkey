@@ -6,7 +6,7 @@ module Monkey::ProcessMail
 
   TimeRecording = proc do
 
-    time_recording_dir = File.expand_path "~/.monkey/time-recording"
+    time_recording_dir = File.expand_path "~/.monkey/business/time-recording"
 
     subject(/Time Recording Report E4/) do
       message.attachments.size.should == 1
