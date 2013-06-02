@@ -24,4 +24,9 @@ module Monkey::Business
     "yaml:#{File.expand_path '~/.monkey/business'}").resource_naming_convention =
     DataMapper::NamingConventions::Resource::UnderscoredAndPluralizedWithoutModule
 
+  # XXX: DataMapper requires a default repository
+  unless DataMapper::Repository.adapters.has_key? :default
+    DataMapper.setup :default, "yaml:#{File.expand_path 'sqlite3:memory:'}"
+  end
+
 end
