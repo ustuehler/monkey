@@ -12,35 +12,55 @@ module Monkey::Business
     property :number, String, :key => true
     property :items, Csv
 
-    # Get a ledger entry for this invoice.
-    def entry
-      primary_account = customer_or_supplier proc { |customer|
-        customer.receivable_account
-      }, proc { |supplier|
-        supplier.payable_account
-      }
+    # Does this invoice have a payment entry?
+    def payed?
+      !payment_entry.nil?
+    end
 
-      primary_account.entries.find { |e| e.code == number.to_s }
+    # Return the customer or supplier account for this invoice.
+    def business_account
+      customer_or_supplier \
+        proc { customer.receivable_account },
+        proc { supplier.payable_account }
+    end
+
+    # Return the commodity account for this invoice.
+    def commodity_account
+      customer_or_supplier \
+        proc { customer.sales_account },
+        proc { supplier.purchases_account }
+    end
+
+    # Return the account to book taxes to for this invoice.
+    def tax_account
+      customer_or_supplier \
+        proc { customer.tax_account },
+        proc { supplier.input_tax_account }
+    end
+
+    # Get the ledger entry for this invoice.
+    def entry
+      business_account.entries.find { |e|
+        e.code == number.to_s and e.accounts.include? commodity_account
+      }
+    end
+
+    # Get the ledger entry for the payment of this invoice.
+    def payment_entry
+      business_account.entries.find { |e|
+        e.code == number.to_s and not e.accounts.include? commodity_account
+      }
     end
 
     # Get or create a ledger entry for this invoice.
     def entry!
-      first_account, second_account, tax_account, description =
-        customer_or_supplier proc { |customer|
-          [customer.receivable_account,
-           customer.sales_account,
-           customer.tax_account,
-           customer.name]
-        }, proc { |supplier|
-          [supplier.payable_account,
-           supplier.purchases_account,
-           supplier.input_tax_account,
-           supplier.name]
-        }
+      description = customer_or_supplier \
+        proc { customer.name },
+        proc { supplier.name }
 
       unless e = self.entry
-        e = first_account.add_entry amount, \
-          second_account, amount_net,
+        e = business_account.add_entry amount, \
+          commodity_account, amount_net,
           tax_account, amount_tax
         e.description = description
         e.code = number.to_s
@@ -92,6 +112,10 @@ module Monkey::Business
       def to_a
         [@description, @quantity, @unit, @unit_price]
       end
+
+      def map(*args, &block)
+        to_a.map(*args, &block)
+      end
     end
 
     private
@@ -100,9 +124,9 @@ module Monkey::Business
       if customer_id and supplier_id
         raise "invoice has both a customer and supplier"
       elsif customer_id
-        customer_block.call customer
+        customer_block.call
       elsif supplier_id
-        supplier_block.call supplier
+        supplier_block.call
       else
         raise "neither a customer nor a supplier for this invoice"
       end
