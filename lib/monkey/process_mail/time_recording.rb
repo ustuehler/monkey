@@ -12,7 +12,7 @@ module Monkey::ProcessMail
       message.attachments.size.should == 1
 
       attachment = message.attachments.first
-      attachment.content_type.should start_with("text/comma-separated-values;")
+      attachment.content_type.should match(/^text\/(csv|comma-separated-values);/)
       attachment.content_type_parameters.should include("name")
 
       filename = attachment.content_type_parameters['name']
