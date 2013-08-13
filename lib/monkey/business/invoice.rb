@@ -2,7 +2,7 @@ require 'monkey/business'
 
 module Monkey::Business
 
-  # Outgoing invoice for my work at a customer
+  # Incoming supplier invoices and outgoing customer invoices.
   class Invoice
     include Resource
 
@@ -10,7 +10,34 @@ module Monkey::Business
     belongs_to :supplier, :key => true, :required => false
 
     property :number, String, :key => true
+    property :date, Date
+
+    property :start_date, Date
+    property :end_date, Date
     property :items, Csv
+
+    # Return the largest customer invoice number in use.  The number
+    # format must be such that numbers can be sorted alphanumerically.
+    def self.last_number
+      select { |i| !i.customer.nil? }.map { |i| i.number }.sort.last
+    end
+
+    # Return the next unused customer invoice number.  For this to
+    # work, the number format must match "YYYYNNNN".
+    def self.next_number
+      if last_number =~ /^(\d{4})(\d{4})$/
+        year, serial = $1, $2
+        this_year = Time.now.strftime('%Y')
+
+        if year == this_year
+          "%s%04d" % [year, serial.to_i + 1]
+        else
+          "%s%04d" % [this_year, 1]
+        end
+      else
+        raise "last invoice number doesn't match the pattern YYYYNNNN: #{last_number.inspect}"
+      end
+    end
 
     # Does this invoice have a payment entry?
     def payed?
@@ -111,6 +138,10 @@ module Monkey::Business
 
       def to_a
         [@description, @quantity, @unit, @unit_price]
+      end
+
+      def ==(other)
+        self.to_a == other.to_a
       end
 
       def map(*args, &block)
