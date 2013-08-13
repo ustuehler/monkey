@@ -32,7 +32,7 @@ module Monkey::Accounting
       end
 
       @commodity = Commodity.coerce(commodity)
-      @quantity = BigDecimal.new(quantity)
+      @quantity = BigDecimal.new(s)
     end
 
     def +(x); same_currency_op x, :+; end
