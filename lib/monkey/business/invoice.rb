@@ -88,7 +88,7 @@ module Monkey::Business
     end
 
     def items
-      super.map { |row| Item.new(*row) }
+      (super || []).map { |row| Item.new(*row) }
     end
 
     def items=(array)
@@ -105,7 +105,7 @@ module Monkey::Business
 
       def initialize(description, quantity, unit, unit_price)
         @description, @quantity, @unit, @unit_price =
-          description, quantity.to_i, unit,
+          description, quantity.to_f, unit,
           Monkey::Accounting::Amount.coerce(unit_price)
       end
 
