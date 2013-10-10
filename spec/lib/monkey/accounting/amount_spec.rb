@@ -86,6 +86,18 @@ module Monkey::Accounting
       a.should == b
     end
 
+    it "compares against special zero amount" do
+      Amount.zero.should == 0
+      Amount.zero.should == Amount.zero
+      Amount.zero.should < Amount.parse('0.4')
+      Amount.zero.should < Amount.parse('0.4 EUR')
+      Amount.zero.should < Amount.parse('0.1 EUR')
+      Amount.zero.should > Amount.parse('-0.1 EUR')
+      Amount.parse('0.1 EUR').should > 0
+      Amount.parse('-0.1 EUR').should < 0
+      Amount.zero.should be_between(Amount.parse('-0.1 EUR'), Amount.parse('0.1 EUR'))
+    end
+
   end
 
 end

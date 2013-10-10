@@ -11,12 +11,28 @@ module Monkey::Accounting
   # amount.cc from the original ledger program (see
   # http://ledger-cli.org).
   class Amount
-    attr_accessor :quantity, :commodity, :precision
+    attr_reader :commodity
 
-    # Creates an amount from +commodity+ and +quantity+.  +commodity+
-    # is a (possibly empty) string denoting a fictional or a well-known
-    # currency, stock symbol or other unit.  +quantity+ is a numeric
-    # value accepted by the BigDecimal.new constructor.
+    attr_accessor :quantity, :precision
+
+    # Change the amount's commodity symbol.
+    #
+    # @param value  a commodity symbol (see {Commodity.find_or_create}),
+    #  or an instance of {Commodity}
+    def commodity=(value)
+      @commodity = Commodity.find_or_create(value)
+    end
+
+    # Creates an amount of the exact _quantity_ and _commodity_.
+    # More often, you'll want to use the {parse} method.
+    #
+    # @param commodity [Commodity,String]  a (possibly empty) string
+    #  denoting a fictional or a well-known currency, stock symbol or
+    #  other unit.  The commodity denoted by a String must already
+    #  exist (see {Commodity.create}).  Alternatively, an instance of
+    #  {Commodity} may be given.
+    # @param quantity  a numeric value accepted by the BigDecimal.new
+    #  constructor
     def initialize(commodity, quantity)
       # Determine the initial precision from the quantity argument.
       s = case quantity
@@ -41,8 +57,38 @@ module Monkey::Accounting
     def *(x); numeric_op x, :*; end
     def /(x); numeric_op x, :/; end
 
-    def ==(x)
-      @commodity == x.commodity and @quantity == x.quantity
+    include Comparable # implements comparison operators using <=>
+
+    def zero?
+      @quantity.zero?
+    end
+
+    def <=>(x)
+      if zero? or (x.respond_to?(:zero?) and x.zero?)
+        if x.respond_to?(:quantity)
+          @quantity <=> x.quantity
+        elsif x.is_a?(Numeric)
+          @quantity <=> x
+        else
+          # Can't compare even zero against something that isn't
+          # numeric.
+          # TODO: should an error be raised here?
+          nil
+        end
+      elsif x.respond_to?(:commodity) and x.respond_to?(:quantity)
+        if @commodity == x.commodity
+          @quantity <=> x.quantity
+        else
+          # Can't compare non-zero quantities of different commodities.
+          # TODO: should an error be raised here?
+          nil
+        end
+      else
+        # Can't compare against something that has no commodity and
+        # quantity.
+        # TODO: should an error be raised here?
+        nil
+      end
     end
 
     def -@
@@ -51,9 +97,18 @@ module Monkey::Accounting
       a
     end
 
-    # Coerces +value+ into an +Amount+ instance.  If +value+ is not
-    # already an +Amount+, it should be a +String+ accepted by the
-    # #parse method.
+    def abs
+      a = self.class.new @commodity, @quantity.abs
+      a.precision = @precision
+      a
+    end
+
+    # Coerces _value_ into an +Amount+ instance.
+    #
+    # @param [Amount,String] value  If _value_ is not already an
+    #  +Amount+ instance, it should be a +String+ accepted by the
+    #  {parse} method.
+    # @return [Amount]
     def self.coerce(value)
       case value
       when Amount
@@ -81,9 +136,12 @@ module Monkey::Accounting
     AMOUNT_PARSE_NO_MIGRATE = 0x0001
     AMOUNT_PARSE_NO_REDUCE  = 0x0004
 
-    # Parse the given +input+ object as a sequence of characters.
-    # The +input+ object must have a #chars method that returns an
-    # +Enumerator+ over a sequence of single-character strings.
+    # Parses the given _input_ as a sequence of characters.
+    #
+    # @param [String,#chars] input  a String object, or any object
+    #  which has a #chars method returning an +Enumerator+ over a
+    #  sequence of single-character strings
+    # @return [Amount]
     def self.parse(input, flags = AMOUNT_PARSE_DEFAULT)
       chars = BetterEnumerator.new(input.chars)
       negative = false

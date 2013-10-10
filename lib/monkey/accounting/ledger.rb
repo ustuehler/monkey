@@ -27,7 +27,7 @@ module Monkey::Accounting
     #
     # @param [String,nil] filename  The file to save the ledger to.
     #  When `filename` is nil, the filename attribute is consulted,
-    #  which is normally set by the {#load_file} method.
+    #  which is normally set by the {Ledger.load_file} method.
     def save!(filename = nil)
       filename ||= @filename
       raise "no filename to save ledger to" unless filename
@@ -36,8 +36,8 @@ module Monkey::Accounting
 
     # Creates a new ledger from the specified input.
     #
-    # @param [String,IO]  The ledger input in human-readable format.
-    #   If `input` is not specified, an empty ledger is created.
+    # @param [String,IO] input  The ledger input in human-readable
+    #  format. If +input+ is not specified, an empty ledger is created.
     def initialize(input = "")
       @entries = []
       parse input
@@ -46,8 +46,8 @@ module Monkey::Accounting
     # Parses the specified input in human-readable form and remembers
     # the parsed entries.
     #
-    # @param [String,IO]  The ledger input in human-readable format.
-    #  If `input` is not specified, an empty ledger is created.
+    # @param [String,IO] input  The ledger input in human-readable
+    #  format. If +input+ is not specified, an empty ledger is created.
     # @return [Array]  The entries that were parsed and appended to
     #  the already existing entries.
     def parse(input)
@@ -138,6 +138,16 @@ module Monkey::Accounting
     end
 
     class Account < String
+      # Constructs an account named +name+ in the default ledger.
+      #
+      # This method was originally added to support the "highline"
+      # Ruby gem, as in:
+      #
+      #  ask('Account? ', Monkey::Accounting::Account)
+      def self.parse(name)
+        new Monkey::Accounting.default_ledger, name
+      end
+
       def initialize(ledger, name)
         @ledger = ledger
         super(name)

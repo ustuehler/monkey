@@ -16,9 +16,9 @@ module Monkey::Accounting
   # Returns the file name of the default ledger.  The file name is
   # looked up in the following order (first non-empty value wins):
   #
-  # 1. result of {Monkey.config.accounting.default_ledger_file}
-  # 2. environment variable LEDGER_FILE
-  # 3. --file (or -f) option in <tt>~/.ledgerrc</tt> file
+  # 1. Result of {Monkey.config}.accounting.default_ledger_file
+  # 2. Environment variable +LEDGER_FILE+
+  # 3. +--file+ (or +-f+) option in +~/.ledgerrc+ file
   def self.default_ledger_file
     if filename = Monkey.config.accounting.default_ledger_file
       return File.expand_path(filename)

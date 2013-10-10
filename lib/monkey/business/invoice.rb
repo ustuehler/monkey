@@ -40,7 +40,7 @@ module Monkey::Business
     end
 
     # Does this invoice have a payment entry?
-    def payed?
+    def paid?
       !payment_entry.nil?
     end
 
@@ -89,6 +89,7 @@ module Monkey::Business
         e = business_account.add_entry amount, \
           commodity_account, amount_net,
           tax_account, amount_tax
+        e.date = date if date
         e.description = description
         e.code = number.to_s
         e.flag = '!'
