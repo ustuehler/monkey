@@ -1,8 +1,8 @@
-desc 'Business management commands'
+desc 'manage customers, suppliers, offers, invoices and such'
 
 long_desc <<EOS
-Run business-related commands.  Business commands deal with customers,
-suppliers, invoices (incoming and outgoing), taxes and such things.
+Business-related commands deal with customers, suppliers, offers,
+invoices (incoming and outgoing), taxes and such things.
 EOS
 
 command :business do |c|

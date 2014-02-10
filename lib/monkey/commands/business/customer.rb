@@ -1,9 +1,9 @@
-desc 'Query and manipulate customer data'
+desc 'manage beneficiaries of my goods and services'
 
 long_desc <<EOS
-Query and manipulate customer data.  Every customer has at least a
-unique symbolic identifier and a display name.  Use the `show' command
-without arguments to list all currently defined customer identifiers.
+Manage customer accounts.  Every customer has a unique alphanumeric
+identifier and a display name.  Use the `show' command without arguments
+to list all customers.
 EOS
 
 customer_formatter = lambda do |customer|
@@ -25,7 +25,12 @@ customer_formatter = lambda do |customer|
 end
 
 command :customer do |c|
-  c.desc 'List all customer IDs or show customer details'
+  c.desc 'List customers or show details'
+  c.arg_name '[<id>...]'
+  c.long_desc <<-EOS
+  List all defined customer identifiers (without arguments) or show
+  details for each customer <id>.
+  EOS
   c.command :show do |show|
     show.action do |global_options, options, args|
       if args.size == 0

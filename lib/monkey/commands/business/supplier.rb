@@ -1,9 +1,9 @@
-desc 'Query and manipulate supplier data'
+desc 'manage suppliers of goods and services to me'
 
 long_desc <<EOS
-Query and manipulate supplier data.  Every supplier has at least a
-unique symbolic identifier and a display name.  Use the `show' command
-without arguments to list all currently defined supplier identifiers.
+Manage supplier accounts.  Every supplier has a unique alphanumeric
+identifier and a display name.  Run the `show' command without arguments
+to list all suppliers.
 EOS
 
 supplier_formatter = lambda do |supplier|
@@ -21,7 +21,12 @@ supplier_formatter = lambda do |supplier|
 end
 
 command :supplier do |c|
-  c.desc 'List all supplier IDs or show supplier details'
+  c.desc 'List suppliers or show details'
+  c.arg_name '[<id>...]'
+  c.long_desc <<-EOS
+  List all defined supplier identifiers (without arguments) or show
+  details for each supplier <id>.
+  EOS
   c.command :show do |show|
     show.action do |global_options, options, args|
       if args.size == 0
