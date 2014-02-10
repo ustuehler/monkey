@@ -3,6 +3,14 @@ require 'monkey/business'
 module Monkey::Business
 
   # Incoming supplier invoices and outgoing customer invoices.
+  #
+  # Examples:
+  #
+  #  # Retrieve all customer invoices (outgoing).
+  #  Monkey::Business::Invoice.all(:supplier_id => nil)
+  #
+  #  # Retrieve all supplier invoices (incoming).
+  #  Monkey::Business::Invoice.all(:customer_id => nil)
   class Invoice
     include Resource
 
