@@ -6,6 +6,7 @@ module Monkey::Accounting
   # of this class will parse or generate statements in specific formats.
   class BankStatement
     autoload :CSV, 'monkey/accounting/bank_statement/csv'
+    autoload :OFX, 'monkey/accounting/bank_statement/ofx'
     autoload :Config, 'monkey/accounting/bank_statement/config'
 
     include Enumerable

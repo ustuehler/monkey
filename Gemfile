@@ -5,6 +5,7 @@ source "https://rubygems.org"
 gem 'data_mapper'
 gem 'dm-yaml-adapter'
 gem 'dm-sqlite-adapter'
+gem "banker-ofx", "~> 0.4.2"
 
 # monkey-process-mail
 gem "highline"
