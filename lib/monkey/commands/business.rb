@@ -1,4 +1,4 @@
-desc 'manage customers, suppliers, offers, invoices and such'
+desc 'Manage customers, suppliers, offers, invoices and such'
 
 long_desc <<EOS
 Business-related commands deal with customers, suppliers, offers,

@@ -1,4 +1,4 @@
-desc 'manage beneficiaries of my goods and services'
+desc 'Manage beneficiaries of my goods and services'
 
 long_desc <<EOS
 Manage customer accounts.  Every customer has a unique alphanumeric
@@ -25,11 +25,11 @@ customer_formatter = lambda do |customer|
 end
 
 command :customer do |c|
-  c.desc 'List customers or show details'
+  c.desc 'Show the list of customers or details for some'
   c.arg_name '[<id>...]'
   c.long_desc <<-EOS
-  List all defined customer identifiers (without arguments) or show
-  details for each customer <id>.
+  Show the list of all customer accounts (without arguments) or
+  details for one or more accounts identified by <id>.
   EOS
   c.command :show do |show|
     show.action do |global_options, options, args|

@@ -1,4 +1,4 @@
-desc 'manage suppliers of goods and services to me'
+desc 'Manage suppliers of goods and services to me'
 
 long_desc <<EOS
 Manage supplier accounts.  Every supplier has a unique alphanumeric
@@ -21,11 +21,11 @@ supplier_formatter = lambda do |supplier|
 end
 
 command :supplier do |c|
-  c.desc 'List suppliers or show details'
+  c.desc 'Show the list of suppliers or details for some'
   c.arg_name '[<id>...]'
   c.long_desc <<-EOS
-  List all defined supplier identifiers (without arguments) or show
-  details for each supplier <id>.
+  Show the list of all supplier accounts (without arguments) or
+  details for one or more accounts identified by <id>.
   EOS
   c.command :show do |show|
     show.action do |global_options, options, args|
