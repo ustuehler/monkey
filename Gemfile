@@ -1,6 +1,8 @@
 # Gemfile
 source "https://rubygems.org"
 
+gem 'gli'
+
 # accounting and customer relations management (and invoices, etc.)
 gem 'data_mapper'
 gem 'dm-yaml-adapter'

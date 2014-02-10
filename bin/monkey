@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+
+require 'gli'
+require 'monkey'
+
+include GLI::App
+
+program_desc 'My personal home/office automation monkey'
+
+version Monkey::VERSION
+
+subcommand_option_handling :normal
+
+commands_from 'monkey/commands'
+
+exit run(ARGV)

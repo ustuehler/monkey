@@ -14,6 +14,7 @@ module Monkey
   autoload :Business, 'monkey/business'
   autoload :Config, 'monkey/config'
   autoload :ProcessMail, 'monkey/process_mail'
+  autoload :VERSION, 'monkey/version'
 
   # Returns the run-time configuration for all {Monkey} modules.
   #
