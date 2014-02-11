@@ -6,43 +6,6 @@ identifier and a display name.  Use the `show' command without arguments
 to list all customers.
 EOS
 
-customer_formatter = lambda do |customer|
-  <<-EOS
-* customer #{customer.id}
-  Name: #{customer.name}
-  Billing address:
-    #{customer.billing_address || "(none)"}
-  Receivable account: #{customer.receivable_account_name ||
-    "#{customer.default_receivable_account_name} (default)"}
-  Sales account: #{customer.sales_account_name ||
-    "#{customer.default_sales_account_name} (default)"}
-  Tax account: #{customer.tax_account_name ||
-    "#{customer.default_tax_account_name} (default)"}
-  Hourly rate: #{customer.hourly_rate ||
-    "#{customer.default_hourly_rate} (default)"}
-  Number of invoices: #{customer.invoices.size}
-  EOS
-end
-
 command :customer do |c|
-  c.desc 'Show the list of customers or details for some'
-  c.arg_name '[<id>...]'
-  c.long_desc <<-EOS
-  Show the list of all customer accounts (without arguments) or
-  details for one or more accounts identified by <id>.
-  EOS
-  c.command :show do |show|
-    show.action do |global_options, options, args|
-      if args.size == 0
-        Monkey::Business::Customer.all.each do |customer|
-          puts customer.id
-        end
-      else
-        args.each do |customer_id|
-          customer = Monkey::Business::Customer.get!(customer_id)
-          puts customer_formatter.call(customer)
-        end
-      end
-    end
-  end
+  c.commands_from 'monkey/commands/business/customer'
 end
