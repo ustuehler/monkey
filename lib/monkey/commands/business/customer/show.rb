@@ -1,5 +1,7 @@
 desc 'Show the list of customers or details for some'
 
+# The following doesn't affect help output as of gli-2.9.0:
+#arg_name 'id', [:optional, :multiple]
 arg_name '[<id>...]'
 
 long_desc <<EOS
