@@ -13,6 +13,33 @@ version Monkey::VERSION
 
 subcommand_option_handling :normal
 
+class GLI::Command
+  # Load subcommands from `path'.  This method is directly modeled
+  # after GLI::App.commands_from but uses #instance_eval to evaluate
+  # the loaded files with self set to the parent command instance.
+  def commands_from(path)
+    if Pathname.new(path).absolute?
+      load_commands(path) if File.exists?(path)
+    else
+      $LOAD_PATH.each do |load_path|
+        commands_path = File.join(load_path,path)
+        load_commands(commands_path) if File.exists?(commands_path)
+      end
+    end
+  end
+
+  private
+
+  def load_commands(path)
+    Dir.entries(path).sort.each do |entry|
+      file = File.join(path, entry)
+      if file.end_with?('.rb') and File.file?(file)
+        instance_eval File.read(file), file, 1
+      end
+    end
+  end
+end
+
 commands_from 'monkey/commands'
 
 exit run(ARGV)
