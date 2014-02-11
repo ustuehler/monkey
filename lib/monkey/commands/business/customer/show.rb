@@ -21,7 +21,7 @@ customer_formatter = lambda do |customer|
     "#{customer.default_sales_account_name} (default)"}
   Tax account: #{customer.tax_account_name ||
     "#{customer.default_tax_account_name} (default)"}
-  Hourly rate: #{customer.hourly_rate ||
+  Hourly rate: #{customer[:hourly_rate] ||
     "#{customer.default_hourly_rate} (default)"}
   Number of invoices: #{customer.invoices.size}
   EOS
