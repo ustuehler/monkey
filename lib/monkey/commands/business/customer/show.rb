@@ -14,7 +14,11 @@ customer_formatter = lambda do |customer|
 * customer #{customer.id}
   Name: #{customer.name}
   Billing address:
-    #{customer.billing_address || "(none)"}
+    #{if customer.billing_address
+        customer.billing_address.split("\n").join("\n    ")
+      else
+        "(none)"
+      end}
   Receivable account: #{customer.receivable_account_name ||
     "#{customer.default_receivable_account_name} (default)"}
   Sales account: #{customer.sales_account_name ||
