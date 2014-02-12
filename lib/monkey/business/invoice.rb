@@ -47,9 +47,45 @@ module Monkey::Business
       end
     end
 
-    # Does this invoice have a payment entry?
+    # Does this invoice have an entry in accounts receivable?  If so
+    # then it is no longer considered pending (open for editing).
+    def closed?
+      !entry.nil?
+    end
+
+    # Does this invoice have a payment entry in accounts receivable?
+    # If so then it is considered to have been paid, not necessarily
+    # in full though.  The amount paid must still be compared against
+    # the amount that was due.
     def paid?
       !payment_entry.nil?
+    end
+
+    # Amount that is due to be paid, only ever non-zero if the invoice
+    # is closed.
+    def amount_due
+      closed? ? amount : Monkey::Accounting::Amount.zero
+    end
+
+    # Amount that was paid if there are one or more payment entries for
+    # this invoice in the ledger.
+    def amount_paid
+      amount = Monkey::Accounting::Amount.zero
+      if paid?
+        (e = payment_entry).transactions.select { |t|
+          t.account != business_account
+        }.each { |t|
+          amount += t.amount || e.null_amount
+        }
+      end
+      amount
+    end
+
+    # Return the difference between the amount paid and the amount due.
+    # For a properly balanced invoice the result should equal zero, but
+    # note that the balance can also be zero if the amount due is zero.
+    def balance
+      amount_paid - amount_due
     end
 
     # Return the customer or supplier account for this invoice.
