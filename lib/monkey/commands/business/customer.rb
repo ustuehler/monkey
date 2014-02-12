@@ -1,4 +1,4 @@
-desc 'Manage beneficiaries of my goods and services'
+desc 'Manage buyers of goods and services'
 
 long_desc <<EOS
 Manage customer accounts.  Every customer has a unique alphanumeric

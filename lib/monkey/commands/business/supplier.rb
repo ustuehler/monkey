@@ -1,4 +1,4 @@
-desc 'Manage suppliers of goods and services to me'
+desc 'Manage sellers of goods and services'
 
 long_desc <<EOS
 Manage supplier accounts.  Every supplier has a unique alphanumeric
