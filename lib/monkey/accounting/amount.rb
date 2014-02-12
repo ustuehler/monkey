@@ -51,8 +51,8 @@ module Monkey::Accounting
       @quantity = BigDecimal.new(s)
     end
 
-    def +(x); same_currency_op x, :+; end
-    def -(x); same_currency_op x, :-; end
+    def +(x); same_commodity_op x, :+; end
+    def -(x); same_commodity_op x, :-; end
 
     def *(x); numeric_op x, :*; end
     def /(x); numeric_op x, :/; end
@@ -106,8 +106,10 @@ module Monkey::Accounting
     # Coerces _value_ into an +Amount+ instance.
     #
     # @param [Amount,String] value  If _value_ is not already an
-    #  +Amount+ instance, it should be a +String+ accepted by the
-    #  {parse} method.
+    #  +Amount+ instance it should be a +String+ accepted by the
+    #  {parse} method or a +Numeric+.  If _value_ is a +Numeric+
+    #  then it will be used as the quantity of an +Amount+ with
+    #  the "null" commodity.
     # @return [Amount]
     def self.coerce(value)
       case value
@@ -115,6 +117,8 @@ module Monkey::Accounting
         value
       when String
         parse value
+      when Numeric
+        self.new(Commodity.null_commodity, value)
       else
         raise ArgumentError, "can't coerce #{value.inspect} into #{self}"
       end
@@ -306,10 +310,16 @@ module Monkey::Accounting
 
     private
 
-    def same_currency_op(x, op)
+    def same_commodity_op(x, op)
       x = self.class.coerce(x)
 
-      if x.commodity != @commodity
+      if x.commodity == @commodity
+        new_commodity = @commodity
+      elsif x.commodity == Commodity.null_commodity
+        new_commodity = @commodity
+      elsif @commodity == Commodity.null_commodity
+        new_commodity = x.commodity
+      else
         raise ArgumentError, "non-matching commodity for #{x}, " +
           "expected #{@commodity.inspect}"
       end
@@ -317,7 +327,7 @@ module Monkey::Accounting
       new_quantity = @quantity.send(op, x.quantity)
 
       # TODO: handle price
-      result = self.class.new(commodity, new_quantity)
+      result = self.class.new(new_commodity, new_quantity)
       result.precision = [@precision, x.precision].max
       result
     end
