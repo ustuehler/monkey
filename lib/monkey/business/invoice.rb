@@ -1,3 +1,4 @@
+require 'monkey/data_mapper'
 require 'monkey/business'
 
 module Monkey::Business
@@ -12,7 +13,7 @@ module Monkey::Business
   #  # Retrieve all supplier invoices (incoming).
   #  Monkey::Business::Invoice.all(:customer_id => nil)
   class Invoice
-    include Resource
+    include Monkey::DataMapper::Resource
 
     belongs_to :customer, :key => true, :required => false
     belongs_to :supplier, :key => true, :required => false

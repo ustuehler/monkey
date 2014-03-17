@@ -13,6 +13,7 @@ module Monkey
   autoload :Accounting, 'monkey/accounting'
   autoload :Business, 'monkey/business'
   autoload :Config, 'monkey/config'
+  autoload :DataMapper, 'monkey/data_mapper'
   autoload :ProcessMail, 'monkey/process_mail'
   autoload :VERSION, 'monkey/version'
 

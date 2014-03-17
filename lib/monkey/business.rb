@@ -4,7 +4,6 @@ module Monkey::Business
   autoload :Config, 'monkey/business/config'
   autoload :Customer, 'monkey/business/customer'
   autoload :Invoice, 'monkey/business/invoice'
-  autoload :Resource, 'monkey/business/resource'
   autoload :Supplier, 'monkey/business/supplier'
   autoload :TimeSheet, 'monkey/business/time_sheet'
 
@@ -22,11 +21,4 @@ module Monkey::Business
   end
 end
 
-# Load all data models and call DataMapper.finalize.
-
-require 'monkey/business/resource'
-require 'monkey/business/customer'
-require 'monkey/business/invoice'
-require 'monkey/business/supplier'
-
-DataMapper.finalize
+require 'monkey/data_mapper/finalize'

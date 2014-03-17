@@ -1,10 +1,11 @@
+require 'monkey/data_mapper'
 require 'monkey/business'
 
 module Monkey::Business
 
   # Business customer (persistent resource)
   class Customer
-    include Resource
+    include Monkey::DataMapper::Resource
 
     property :id, String, :key => true
     property :name, String
