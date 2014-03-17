@@ -11,6 +11,9 @@ command :update do |c|
   c.desc 'Display name'
   c.flag :name
 
+  c.desc 'Bank code (e.g., German "Bankleitzahl")'
+  c.flag :code
+
   c.action do |global_options, options, args|
     help_now!('too many arguments') if args.size > 1
     help_now!('missing <id>') if args.size == 0
@@ -18,6 +21,7 @@ command :update do |c|
     bank_id = args[0]
     bank = Monkey::Banking::Bank.get!(bank_id)
     bank[:name] = options[:name] unless options[:name].nil?
+    bank[:code] = options[:code] unless options[:code].nil?
     bank.save!
   end
 end

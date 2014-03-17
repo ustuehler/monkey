@@ -7,6 +7,7 @@ module Monkey::Banking
 
     property :id, String, :key => true, :unique => true
     property :name, String
+    property :code, String
 
     has n, :accounts
   end

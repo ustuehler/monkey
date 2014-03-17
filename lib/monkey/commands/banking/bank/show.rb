@@ -13,6 +13,7 @@ bank_formatter = lambda do |bank|
   <<-EOS
 * bank #{bank.id}
   Name: #{bank.name}
+  Code: #{bank.code}
   Number of accounts: #{bank.accounts.size}
   EOS
 end
