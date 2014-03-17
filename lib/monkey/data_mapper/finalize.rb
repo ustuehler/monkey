@@ -1,5 +1,8 @@
 # Load all data models and call DataMapper.finalize.
 
+require 'monkey/banking/account'
+require 'monkey/banking/bank'
+
 require 'monkey/business/customer'
 require 'monkey/business/invoice'
 require 'monkey/business/supplier'

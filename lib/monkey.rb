@@ -6,11 +6,13 @@
 # a configuration file, can be retrieved via {Monkey.config}.
 #
 # @see Monkey::Accounting
+# @see Monkey::Banking
 # @see Monkey::Business
 # @see Monkey::ProcessMail
 # @see Monkey.config
 module Monkey
   autoload :Accounting, 'monkey/accounting'
+  autoload :Banking, 'monkey/banking'
   autoload :Business, 'monkey/business'
   autoload :Config, 'monkey/config'
   autoload :DataMapper, 'monkey/data_mapper'
