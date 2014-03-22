@@ -348,6 +348,14 @@ module Monkey::Accounting
     end
 
     class BetterEnumerator < Enumerator
+      def initialize(object)
+        super() do |y|
+          object.to_enum.each do |item|
+            y << item
+          end
+        end
+      end
+
       def peek_next_nonws
         while (c = peek) =~ /\s/
           self.next
