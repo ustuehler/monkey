@@ -1,15 +1,25 @@
-# +Monkey+ is the root module for all components of my "home and office
-# monkey" - a toolbox that automates things I don't like to do manually.
+# Monkey is the top-level module for all components of my "home and office
+# monkey", my personal tool to automate all the things which I don't like to do
+# manually.
 #
-# The configuration for all modules is managed via the {Monkey::Config}
-# class.  The current global configuration, which is normally parsed from
-# a configuration file, can be retrieved via {Monkey.config}.
+# == Components
 #
-# @see Monkey::Accounting
-# @see Monkey::Banking
-# @see Monkey::Business
-# @see Monkey::ProcessMail
-# @see Monkey.config
+# The main components of Monkey and their purpose are:
+#
+# - {Accounting} is to maintain an accounting ledger.
+# - {Banking} is to automate online-banking tasks.
+# - {Business} is to automate routine tasks for small businesses.
+# - {ProcessMail} is to handle known e-mail messages automatically.
+#
+# == Configuration
+#
+# Components that need user-provided configuration data should define a
+# subclass of {Config} in their own module (e.g., {Business::Config}).  The
+# {Config} class abstracts the loading of configuration data from files and
+# lets the component define reasonable defaults for values that the user hasn't
+# set.  The global configuration can be accessed at run-time via {config}.  It
+# is loaded automatically from {config_file} if that file exists when {config}
+# is called for the first time.
 module Monkey
   autoload :Accounting, 'monkey/accounting'
   autoload :Banking, 'monkey/banking'
@@ -19,45 +29,45 @@ module Monkey
   autoload :ProcessMail, 'monkey/process_mail'
   autoload :VERSION, 'monkey/version'
 
-  # Returns the run-time configuration for all {Monkey} modules.
+  # Returns the current run-time configuration for all {Monkey} components.
+  # The {config_file} will be loaded if it exists when this method is first
+  # called; otherwise, a default configuration is assumed.  Any values changed
+  # at run-time will not persist across a restart of the Ruby interpreter.  To
+  # make permanent changes the {config_file} has to be edited.
   #
-  # If {config_file} exists, loads the file using {load_config} and
-  # remembers the {Config} instance.  If the file does not exist, the
-  # instance returned by {default_config} is remembered instead.
+  # @return [Config] the current run-time configuration
   #
-  # Any values changed at run-time will not persist across a restart
-  # of the Ruby interpreter.  To persist changes, the configuration
-  # file must currently be edited by hand.
-  #
-  # @return [Config]  The global run-time configuration instance.
+  # @see config_file
+  # @see load_config
+  # @see default_config
   def self.config
     @config ||= File.exists?(config_file) ? load_config(config_file) :
       default_config
   end
 
-  # Returns the absolute path to the global configuration file for all
-  # {Monkey} modules.
+  # Returns the filename of the global configuration file in the current user's
+  # home directory.
   #
-  # @return [String]  The absolute path to a file in YAML format, which
-  #  may or may not exist.
+  # @return [String] an absolute pathname
   def self.config_file
     File.expand_path '~/.monkey/config.yml'
   end
 
-  # Returns a new {Config} instance.
+  # Returns the default configuration that will be used if the {config_file}
+  # does not exist when the {config} method is first called.  Any values
+  # changed in the returned {Config} instance will only affect that instance
+  # as this method will return a new instance every time it is called.
   #
-  # The instance returned represents the configuration that will be used
-  # if the {config_file} does not exist when the {config} method is first
-  # called.
+  # @return [Config] a new default configuration instance
   def self.default_config
     Config.new
   end
 
-  # Parses the given `filename` (a YAML file) and return a new {Config}
-  # instance for it.
+  # Loads and returns configuration data from the given file.
   #
-  # @param [String] filename  The name of an existing file to parse.
-  # @return [Config]  The configuration that was loaded from the file.
+  # @param filename [String] the name of an existing configuration file
+  #
+  # @return [Config] the configuration that was loaded
   def self.load_config(filename)
     Config.load_file filename
   end
