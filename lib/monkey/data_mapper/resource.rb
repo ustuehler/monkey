@@ -1,23 +1,22 @@
 require 'monkey/data_mapper'
 
 module Monkey::DataMapper
-
   # Include this module instead of DataMapper::Resource to obtain automatic
   # multi-repository behaviour with the YAML file backend.
   #
-  # Example:
+  # If this module was included in a class called Monkey::Foo::Bar, for
+  # example, a DataMapper repository named :monkey_foo would be set up
+  # implicitly and be used by default for all Bar resources.  The repository
+  # :monkey_foo would store resources in YAML files under the directory
+  # "~/.monkey/foo".  All Bar resources would thus be stored in the file
+  # "~/.monkey/foo/bars.yaml".  Normally "Foo" in this example would be a
+  # Monkey submodule such as {Monkey::Business}.
   #
-  #  class Monkey::Foo::Bar
-  #    include Monkey::DataMapper::Resource
-  #
-  #    property :id, String, :key => true
-  #    property :name, String
-  #  end
-  #
-  # The example above implicitly sets up a DataMapper repository named
-  # :monkey_foo, used by default for all Bar resources, which stores resources
-  # in YAML files under "~/.monkey/foo".  Bar resources are thus stored in the
-  # file "~/.monkey/foo/bars.yaml".
+  # @example
+  #   class Monkey::Foo::Bar
+  #     include Monkey::DataMapper::Resource
+  #     # Now you can use DM DSL statements like "property :id, Serial".
+  #   end
   module Resource
     def self.included(resource_class)
       # Get the parent constant from the resource class constant (e.g.,
@@ -54,5 +53,4 @@ module Monkey::DataMapper
       resource_class.define_singleton_method(:default_repository_name) { repository_name }
     end
   end
-
 end
