@@ -20,6 +20,12 @@
 # set.  The global configuration can be accessed at run-time via {config}.  It
 # is loaded automatically from {config_file} if that file exists when {config}
 # is called for the first time.
+#
+# == Database Storage
+#
+# Components that need to maintain records in a database should define
+# persistent object classes that include Monkey's own
+# {Monkey::DataMapper::Resource}.  See {Banking::Account} for an example.
 module Monkey
   autoload :Accounting, 'monkey/accounting'
   autoload :Banking, 'monkey/banking'
@@ -38,10 +44,11 @@ module Monkey
   end
 
   # Returns the current run-time configuration for all {Monkey} components.
-  # The {config_file} will be loaded if it exists when this method is first
-  # called; otherwise, a default configuration is assumed.  Any values changed
-  # at run-time will not persist across a restart of the Ruby interpreter.  To
-  # make permanent changes the {config_file} has to be edited.
+  # The file named by {config_file} will be loaded if it exists when this
+  # method is first called; otherwise, a default configuration is assumed.  Any
+  # values changed at run-time will not persist across a restart of the Ruby
+  # interpreter.  To make permanent changes the configuration file itself has
+  # to be edited.
   #
   # @return [Config] the current run-time configuration
   #
