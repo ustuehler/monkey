@@ -29,6 +29,14 @@ module Monkey
   autoload :ProcessMail, 'monkey/process_mail'
   autoload :VERSION, 'monkey/version'
 
+  # Returns the filename of the global configuration file in the current user's
+  # home directory.
+  #
+  # @return [String] an absolute pathname
+  def self.config_file
+    File.expand_path '~/.monkey/config.yml'
+  end
+
   # Returns the current run-time configuration for all {Monkey} components.
   # The {config_file} will be loaded if it exists when this method is first
   # called; otherwise, a default configuration is assumed.  Any values changed
@@ -38,38 +46,19 @@ module Monkey
   # @return [Config] the current run-time configuration
   #
   # @see config_file
-  # @see load_config
   # @see default_config
   def self.config
-    @config ||= File.exists?(config_file) ? load_config(config_file) :
+    @config ||= File.exists?(config_file) ? Config.load_file(config_file) :
       default_config
   end
 
-  # Returns the filename of the global configuration file in the current user's
-  # home directory.
-  #
-  # @return [String] an absolute pathname
-  def self.config_file
-    File.expand_path '~/.monkey/config.yml'
-  end
-
-  # Returns the default configuration that will be used if the {config_file}
-  # does not exist when the {config} method is first called.  Any values
-  # changed in the returned {Config} instance will only affect that instance
-  # as this method will return a new instance every time it is called.
+  # Returns the default configuration that will be used if the global
+  # configuration file does not exist when {config} is first called.  Any
+  # values changed in the returned {Config} instance will only affect that
+  # instance as this method will return a new instance every time it is called.
   #
   # @return [Config] a new default configuration instance
   def self.default_config
     Config.new
   end
-
-  # Loads and returns configuration data from the given file.
-  #
-  # @param filename [String] the name of an existing configuration file
-  #
-  # @return [Config] the configuration that was loaded
-  def self.load_config(filename)
-    Config.load_file filename
-  end
-
 end
