@@ -220,9 +220,11 @@ module Monkey::Accounting
         parent_name.empty? ? nil : @ledger.account(parent_name)
       end
 
-      # Return a list of subaccounts of this one.
+      # Return a list of direct subaccounts of this one.
       def children
-        @ledger.accounts.select { |a| a.start_with? "#{self}:" }
+        @ledger.accounts.select { |a|
+          a.start_with?("#{self}:") and not a[self.size+1..-1].include?(':')
+        }
       end
 
       # Return just the short name of this account.
