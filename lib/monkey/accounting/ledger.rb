@@ -213,6 +213,22 @@ module Monkey::Accounting
       def exists?
         @ledger.accounts.include? self
       end
+
+      # Return the parent account or +nil+ if this is a top-level account.
+      def parent
+        parent_name = self.split(':')[0..-2].join(':')
+        parent_name.empty? ? nil : @ledger.account(parent_name)
+      end
+
+      # Return a list of subaccounts of this one.
+      def children
+        @ledger.accounts.select { |a| a.start_with? "#{self}:" }
+      end
+
+      # Return just the short name of this account.
+      def name
+        self.split(':')[-1]
+      end
     end
 
     def accounts
