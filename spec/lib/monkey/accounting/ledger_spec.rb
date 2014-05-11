@@ -11,6 +11,14 @@ module Monkey::Accounting
     context "with sample.dat" do
       let(:filename) { "sample.dat" }
 
+      describe "Assets:Bank:Checking account" do
+        subject { ledger.account "Assets:Bank:Checking" }
+
+        describe "ancestors" do
+          it { subject.ancestors.should == ["Assets:Bank", "Assets"] }
+        end
+      end
+
       describe "Assets:Bank account" do
         subject { ledger.account "Assets:Bank" }
 

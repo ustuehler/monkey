@@ -220,6 +220,18 @@ module Monkey::Accounting
         parent_name.empty? ? nil : @ledger.account(parent_name)
       end
 
+      # Return the list of ancestor accounts.  The last account in the list
+      # will be a top-level account.  The list will be empty if this already is
+      # a top-level account.
+      def ancestors
+        a = self
+        result = []
+        while a = a.parent
+          result << a
+        end
+        result
+      end
+
       # Return a list of direct subaccounts of this one.
       def children
         @ledger.accounts.select { |a|
