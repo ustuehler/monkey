@@ -245,6 +245,51 @@ module Monkey::Accounting
       end
     end
 
+    # Returns the list of accounts which track equity.
+    #
+    # @return [Array] the list of equity accounts
+    def equity_accounts
+      Monkey.config.accounting.equity_accounts.map { |name|
+        account name
+      }
+    end
+
+    # Returns the list of accounts which track assets.
+    #
+    # @return [Array] the list of asset accounts
+    def asset_accounts
+      Monkey.config.accounting.asset_accounts.map { |name|
+        account name
+      }
+    end
+
+    # Returns the list of accounts which track liabilities.
+    #
+    # @return [Array] the list of liability accounts
+    def liability_accounts
+      Monkey.config.accounting.liability_accounts.map { |name|
+        account name
+      }
+    end
+
+    # Returns the list of accounts which track income.
+    #
+    # @return [Array] the list of income accounts
+    def income_accounts
+      Monkey.config.accounting.income_accounts.map { |name|
+        account name
+      }
+    end
+
+    # Returns the list of accounts which track expenses.
+    #
+    # @return [Array] the list of expense accounts
+    def expense_accounts
+      Monkey.config.accounting.expense_accounts.map { |name|
+        account name
+      }
+    end
+
     def accounts
       entries.map { |e|
         e.transactions.map { |t|

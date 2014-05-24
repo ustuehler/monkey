@@ -7,11 +7,21 @@ module Monkey::Accounting
     attr_accessor :default_ledger_file
     attr_accessor :default_income_account
     attr_accessor :default_expenses_account
+    attr_accessor :equity_accounts
+    attr_accessor :asset_accounts
+    attr_accessor :liability_accounts
+    attr_accessor :income_accounts
+    attr_accessor :expense_accounts
 
     def initialize(options = {})
       @default_ledger_file = nil
       @default_income_account = "Income:Unknown"
       @default_expenses_account = "Expenses:Unknown"
+      @equity_accounts = ["Equity"]
+      @asset_accounts = ["Assets"]
+      @liability_accounts = ["Liabilities"]
+      @income_accounts = ["Income"]
+      @expense_accounts = ["Expenses"]
 
       super
     end
