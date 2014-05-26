@@ -1,20 +1,32 @@
 require 'monkey'
 
-# Banking module (typically online banking)
+# The main purpose of this module is to automate online-banking tasks.  It
+# makes heavy use of the {Accounting::Amount} class to represent monetary
+# values.
+#
+# @example Get the names of all known banks.
+#   Monkey::Banking.banks.map { |b| b.name }
+#   # => ["Berliner Volksbank", "GLS Gemeinschaftsbank eG"]
+#
+# @example Get the alias names of all known bank accounts.
+#   Monkey::Banking.accounts.map { |a| a.alias }
+#   # => ["private", "business", "savings"]
 #
 # @see Monkey::Accounting
 module Monkey::Banking
   autoload :Account, 'monkey/banking/account'
   autoload :Bank, 'monkey/banking/bank'
 
-  # Return the list of known banks.
+  # Returns all known banks.
+  # @return a collection of {Bank} instances
   def self.banks
     Bank.all
   end
 
-  # Return the list of known bank accounts.
+  # Returns all known bank accounts.
+  # @return a collection of {Account} instances
   def self.accounts
-    banks.each { |b| b.accounts }.flatten
+    Account.all
   end
 
 end
