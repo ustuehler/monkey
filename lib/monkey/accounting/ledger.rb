@@ -290,6 +290,15 @@ module Monkey::Accounting
       }
     end
 
+    # Returns the list of accounts which track money in a bank account.
+    #
+    # @return [Array] the list of expense accounts
+    def bank_accounts
+      Monkey.config.accounting.bank_accounts.map { |name|
+        account name
+      }
+    end
+
     def accounts
       entries.map { |e|
         e.transactions.map { |t|
