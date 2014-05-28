@@ -61,6 +61,34 @@ module Monkey::Accounting
       }.reduce(:+)
     end
 
+    # Returns the sum of all transactions with non-negative amounts in this
+    # entry.
+    def amount
+      transactions.map { |t|
+        if t.amount.nil?
+          null_amount
+        else
+          t.amount
+        end
+      }.select { |amount|
+        amount >= 0
+      }.reduce(:+)
+    end
+
+    # Computes the total amount which was transferred to one of the given
+    # accounts (or a subaccount).
+    def amount_to(accounts)
+      transactions.select { |t|
+        accounts.any? { |a| t.account == a or t.account.start_with?("#{a}:") }
+      }.map { |t|
+        if t.amount.nil?
+          null_amount
+        else
+          t.amount
+        end
+      }.reduce(:+)
+    end
+
     # If there's a transaction with a "null" amount in this entry,
     # returns the amount of that transaction, which is the amount
     # that would balance the entry.  If there is no transaction
