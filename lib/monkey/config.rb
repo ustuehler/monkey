@@ -43,7 +43,7 @@ module Monkey
 
     def class_for_section(section)
       # "Camelize" the section name: "process_mail" => "ProcessMail"
-      section_const = section.to_s.split('_').map {|w| w.capitalize}.join
+      section_const = section.to_s.split('_').map {|w| w.capitalize}.join.to_sym
 
       # "Constantize" the parent module or class name.
       parent_name = self.class.name.split('::')[0...-1]
@@ -51,9 +51,11 @@ module Monkey
         parent.const_get name
       }
 
-      if parent_module.const_defined? section_const
+      # XXX: Module.const_defined?(:Config) may return true even if there is no
+      # constant named :Config actually defined _in_ that module.
+      if parent_module.constants.include? section_const
         section_module = parent_module.const_get(section_const)
-        if section_module.const_defined? :Config
+        if section_module.constants.include? :Config
           return section_module.const_get :Config
         end
       end
