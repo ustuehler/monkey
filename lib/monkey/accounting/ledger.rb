@@ -39,7 +39,7 @@ module Monkey::Accounting
     # @param [String,IO] input  The ledger input in human-readable
     #  format. If +input+ is not specified, an empty ledger is created.
     def initialize(input = "")
-      @entries = []
+      @entries = EntryCollection.new
       parse input
     end
 

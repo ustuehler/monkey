@@ -10,6 +10,7 @@ module Monkey::Accounting
   autoload :Commodity, 'monkey/accounting/commodity'
   autoload :Config, 'monkey/accounting/config'
   autoload :Entry, 'monkey/accounting/entry'
+  autoload :EntryCollection, 'monkey/accounting/entry_collection'
   autoload :Ledger, 'monkey/accounting/ledger'
   autoload :Transaction, 'monkey/accounting/transaction'
 

@@ -5,8 +5,13 @@ module Monkey::Accounting
   # Single ledger entry with two or more transactions.
   class Entry
 
+    # Entry number in the ledger. This attribute should be considered private
+    # and should never be modified directly by the user.
+    attr_accessor :id
+
     attr_reader :date
     attr_reader :effective_date
+
     attr_accessor :flag
     attr_accessor :code
     attr_accessor :description
@@ -44,6 +49,8 @@ module Monkey::Accounting
 
       self.date = date
       self.effective_date = effective_date
+
+      @id = nil
 
       @flag, @code, @description, @transactions =
         flag, code, description, transactions
