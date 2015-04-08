@@ -28,6 +28,34 @@ module Monkey::Accounting
     attr_accessor :header
     attr_accessor :entries
 
+    class ParseError < RuntimeError
+      attr_reader :cause
+
+      def initialize(message, cause)
+        super(message)
+        @cause = cause
+      end
+    end
+
+    class ParseStreamError < ParseError
+      attr_reader :rownum
+      attr_reader :line
+
+      def initialize(message, cause, rownum, line)
+        super(message, cause)
+        @rownum = rownum
+        @line = line
+    end
+
+    class ParseFileError < ParseError
+      attr_reader :filename
+
+      def initialize(message, cause, filename)
+        super(message, cause)
+        @filename = filename
+      end
+    end
+
     # A +CSV+ bank statement parser is initialized using an +options+
     # hash with the following required keys:
     #
@@ -72,7 +100,11 @@ module Monkey::Accounting
     # Parses the given file.
     def parse_file(filename, encoding = file_encoding)
       File.open(filename, "r:#{encoding}") do |input|
-        parse input
+        begin
+          parse input
+        rescue RuntimeError => e
+          raise ParseFileError.new("#{filename}: #{e.message}", e, filename)
+        end
       end
       self
     end
@@ -98,7 +130,11 @@ module Monkey::Accounting
           next
         end
 
-        @entries << make_entry(values)
+        begin
+          @entries << make_entry(values)
+        rescue RuntimeError => e
+          raise ParseStreamError.new("line #{rownum}: #{e.message}", e, rownum, line)
+        end
       end
     end
 
