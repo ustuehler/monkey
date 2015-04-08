@@ -1,2 +1,6 @@
-Gemfile.lock
-.yardoc
+# Ruby stuff
+/Gemfile.lock
+/.yardoc
+
+# Vim swap files
+.*.swp
