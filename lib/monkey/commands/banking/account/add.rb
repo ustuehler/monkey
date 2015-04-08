@@ -11,6 +11,9 @@ command :add do |c|
   c.desc 'Bank identifier'
   c.flag :bank, :required => true
 
+  c.desc 'Non-default account type (e.g., HBCI)'
+  c.flag :type
+
   c.desc 'Account name'
   c.flag :name
 
@@ -20,7 +23,9 @@ command :add do |c|
 
     number = args[0]
     bank_id = options[:bank]
-    bank = Monkey::Banking::Account.new :bank_id => bank_id, :number => number
+
+    account_class = Monkey::Banking::Account.type(options[:type])
+    bank = account_class.new(:bank_id => bank_id, :number => number)
     bank[:name] = options[:name] unless options[:name].nil?
     bank.save!
   end

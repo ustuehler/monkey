@@ -14,8 +14,10 @@ require 'monkey'
 #
 # @see Monkey::Accounting
 module Monkey::Banking
-  autoload :Account, 'monkey/banking/account'
-  autoload :Bank, 'monkey/banking/bank'
+  autoload :Account,   'monkey/banking/account'
+  autoload :AqBanking, 'monkey/banking/aq_banking'
+  autoload :Bank,      'monkey/banking/bank'
+  autoload :Config,    'monkey/banking/config'
 
   # Returns all known banks.
   # @return a collection of {Bank} instances
@@ -28,7 +30,6 @@ module Monkey::Banking
   def self.accounts
     Account.all
   end
-
 end
 
 require 'monkey/data_mapper/finalize'
