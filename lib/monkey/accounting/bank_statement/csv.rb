@@ -110,14 +110,13 @@ module Monkey::Accounting
       self
     end
 
-    # Parses the given +input+ as a sequence of lines with fields
-    # separated by a common separator character.  The +input+ object
-    # must respond to the +lines+ method (e.g., String#lines or
-    # IO#lines).
+    # Parses the given +input+ as a sequence of lines with fields separated by
+    # a common separator character.  The +input+ object must respond to the
+    # +each_line+ method (e.g., String#each_line or IO#each_line).
     def parse(input)
       rownum = 0
       @header = nil if first_line_is_header
-      lines = input.lines.to_a
+      lines = input.each_line.to_a
       lines.each do |line|
         rownum += 1
 
