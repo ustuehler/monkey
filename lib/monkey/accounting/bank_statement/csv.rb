@@ -118,12 +118,13 @@ module Monkey::Accounting
       @header = nil if first_line_is_header
       lines = input.each_line.to_a
       lines.each do |line|
+        line = line.encode('utf-8')
         rownum += 1
 
         next if rownum <= skip_initial_rows
         next if rownum > lines.size - skip_trailing_rows
 
-        values = line.chomp.encode('UTF-8').split(separator)
+        values = line.chomp.split(separator)
 
         if first_line_is_header and @header.nil?
           @header = values
