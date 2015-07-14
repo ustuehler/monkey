@@ -7,6 +7,7 @@ module Monkey::Accounting
 
     DATE = /\d{4}\/\d{2}\/\d{2}/
     WORD = /(?:[^ ]|.[^ ])+/
+    AMOUNT = /(?:[^; ]|[^;][^; ])+/
 
     attr_accessor :entries
     attr_accessor :filename
@@ -92,10 +93,10 @@ module Monkey::Accounting
             # Transactions are denoted by a space at the beginning
             # of the line and must belong to an entry.  Transations
             # are of the form: ACCOUNT[  AMOUNT][  ;NOTE]
-            if date and line =~ /^ +(#{WORD})(?:  +(#{WORD}))?(?:  +;(.*)| *)?$/
+            if date and line =~ /^ +(#{WORD})(?:  +(#{AMOUNT}))?(?:  +;(.*))?$/
               account, amount, note = $1, $2, $3
               amount = Amount.parse(amount) unless amount.nil?
-              txns << Transaction.new(account, amount, note)
+              txns << Transaction.new(account, amount, note ? note.strip : nil)
             else
               raise "invalid transaction, line #{lineno}: #{line.inspect}"
             end

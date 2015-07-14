@@ -16,7 +16,7 @@ module Monkey::Banking
       end
 
       it "raises an error for unknown types" do
-        expect { Account.type(:foo) }.to raise_error
+        expect { Account.type(:foo) }.to raise_error(/foo/)
       end
     end
 
