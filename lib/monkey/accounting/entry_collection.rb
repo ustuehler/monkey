@@ -8,7 +8,7 @@ module Monkey::Accounting
   class EntryCollection
     extend Forwardable
     def_delegators :@entries, :first, :last, :[], :each, :sort, :sort_by,
-      :select, :reject, :collect, :map, :any?, :all?, :none?
+      :select, :reject, :collect, :map, :count, :size, :any?, :all?, :none?
 
     # Creates an empty collection of accounting {Entry} objects.
     def initialize
