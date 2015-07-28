@@ -7,7 +7,7 @@ module Monkey::Accounting
 
     DATE = /\d{4}\/\d{2}\/\d{2}/
     WORD = /(?:[^ ]|.[^ ])+/
-    AMOUNT = /(?:[^; ]|[^;][^; ])+/
+    AMOUNT = /[^; ]#{WORD}?/
 
     attr_accessor :entries
     attr_accessor :filename
@@ -92,13 +92,34 @@ module Monkey::Accounting
           when ' '
             # Transactions are denoted by a space at the beginning
             # of the line and must belong to an entry.  Transations
-            # are of the form: ACCOUNT[  AMOUNT][  ;NOTE]
-            if date and line =~ /^ +(#{WORD})(?:  +(#{AMOUNT}))?(?:  +;(.*))?$/
-              account, amount, note = $1, $2, $3
-              amount = Amount.parse(amount) unless amount.nil?
-              txns << Transaction.new(account, amount, note ? note.strip : nil)
+            # are of the form `ACCOUNT[  AMOUNT][  ;NOTE]`.  Each
+            # line consists of one to three fields delimited by at
+            # least two spaces.
+            if date and line =~ /^ +(#{WORD})(.*)$/
+              account, rest = $1, $2
+
+              # Parse optional comment first, because WORD would
+              # also match ";".
+              if rest =~ /  +;(.*)$/
+                note = $1
+                rest = rest[0...-(note.length + 1)]
+                note.strip!
+              else
+                note = nil
+              end
+
+              # Parse optional amount.
+              if rest =~ /^  +(#{WORD})\s*$/
+                amount = Amount.parse($1)
+              elsif rest.strip.empty?
+                amount = nil
+              else
+                raise "invalid transaction, line #{lineno}: #{line.inspect} (rest: #{rest.inspect})"
+              end
+
+              txns << Transaction.new(account, amount, note)
             else
-              raise "invalid transaction, line #{lineno}: #{line.inspect}"
+              raise "unexpected transaction, line #{lineno}: #{line.inspect}"
             end
           else
             raise "unmatched input, line #{lineno}: #{line.inspect}"
