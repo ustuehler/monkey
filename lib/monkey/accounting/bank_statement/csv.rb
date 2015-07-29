@@ -45,6 +45,7 @@ module Monkey::Accounting
         super(message, cause)
         @rownum = rownum
         @line = line
+      end
     end
 
     class ParseFileError < ParseError
