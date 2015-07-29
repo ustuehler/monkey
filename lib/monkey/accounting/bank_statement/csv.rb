@@ -124,7 +124,7 @@ module Monkey::Accounting
         next if rownum <= skip_initial_rows
         next if rownum > lines.size - skip_trailing_rows
 
-        values = line.chomp.split(separator)
+        values = line.chomp.encode('UTF-8').split(separator)
 
         if first_line_is_header and @header.nil?
           @header = values
