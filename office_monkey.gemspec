@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
 
   # accounting: importing OFX files
   s.add_runtime_dependency "banker-ofx", "~> 0.4.2"
+  s.add_runtime_dependency "iconv" # required by banker-ofx
 
   # monkey-process_mail
   s.add_runtime_dependency 'mailman'
