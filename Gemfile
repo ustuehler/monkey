@@ -8,6 +8,7 @@ gem 'data_mapper'
 gem 'dm-yaml-adapter'
 gem 'dm-sqlite-adapter'
 gem "banker-ofx", "~> 0.4.2"
+gem "iconv" # for banker-ofx
 
 # monkey-process-mail
 gem "highline"
