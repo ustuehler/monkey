@@ -20,6 +20,7 @@ module Monkey::Accounting
             a.transactions.each do |t|
               date = t.posted_at.to_date
               description = t.name
+              description << " (#{t.memo})" if t.memo and !t.memo.empty?
 
               amount = Amount.new commodity, t.amount
               transactions = [Transaction.new(a.id, amount)]
