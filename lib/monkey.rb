@@ -35,6 +35,13 @@ module Monkey
   autoload :ProcessMail, 'monkey/process_mail'
   autoload :VERSION, 'monkey/version'
 
+  # Returns the path to a directory where additional commands are loaded from.
+  #
+  # @return [String] an absolute pathname
+  def self.commands_path
+    File.expand_path '~/.monkey/commands'
+  end
+
   # Returns the filename of the global configuration file in the current user's
   # home directory.
   #
