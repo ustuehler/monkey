@@ -14,6 +14,12 @@ module Monkey::Accounting
       File.open(filename, "r:#{encoding}") do |io|
         OFX(io) do |p|
           p.bank_accounts.each do |a|
+            unless a.type
+              logger.debug "skipping account #{a.id} (no account type set)"
+              next
+            end
+
+            logger.debug { "bank account #{a.id} (#{a.type.inspect})" }
             commodity = Commodity.find_or_create(a.currency)
 
             # Store all transactions as enumerable entries.
@@ -23,6 +29,7 @@ module Monkey::Accounting
               description << " (#{t.memo})" if t.memo and !t.memo.empty?
 
               amount = Amount.new commodity, t.amount
+              logger.debug { "  txn #{t.name.inspect} type=#{t.type} amount=#{amount}" }
               transactions = [Transaction.new(a.id, amount)]
 
               entry = Entry.new(date, nil, nil, nil, description, transactions)

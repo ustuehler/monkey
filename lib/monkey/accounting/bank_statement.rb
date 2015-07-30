@@ -1,4 +1,5 @@
 require 'monkey/accounting'
+require 'logger'
 
 module Monkey::Accounting
 
@@ -10,6 +11,13 @@ module Monkey::Accounting
     autoload :Config, 'monkey/accounting/bank_statement/config'
 
     include Enumerable
+
+    def logger
+      return @logger if @logger
+      @logger ||= Logger.new(STDOUT)
+      @logger.level = Logger::INFO
+      @logger
+    end
   end
 
 end
