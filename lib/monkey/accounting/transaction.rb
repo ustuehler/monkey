@@ -23,7 +23,7 @@ module Monkey::Accounting
     def to_s
       "    #{account}" +
         (amount ? "  #{amount}" : "") +
-        (note ? "  ;#{note}" : "")
+        (note ? "  ; #{note}" : "")
     end
 
   end
