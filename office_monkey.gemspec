@@ -7,9 +7,11 @@ Gem::Specification.new do |s|
   s.description = 'My personal home and office automation monkey, taking some of the more tedious tasks of running a small business away.'
   s.authors = ['Uwe Stuehler']
   s.email = 'uwe@bsdx.de'
-  s.files = `git ls-files lib`.split("\n")
   s.homepage = 'https://ustuehler.github.io/monkey'
   s.license = 'OpenBSD'
+
+  s.files = `git ls-files`.lines.map(&:chomp)
+  s.require_paths << 'lib'
 
   # command-line interface libraries
   s.add_runtime_dependency 'gli'

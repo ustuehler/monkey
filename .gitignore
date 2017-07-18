@@ -1,6 +1,8 @@
 # Ruby stuff
-/Gemfile.lock
 /.yardoc
+/Gemfile.lock
+/pkg/
+/vendor/bundle/
 
 # Vim swap files
 .*.swp
